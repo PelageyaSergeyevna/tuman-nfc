@@ -221,6 +221,47 @@ taps** to open an employee's record.
 Building the Android app additionally needs **JDK 21** and the **Android SDK**.
 See [`docs/ANDROID-BUILD.md`](ANDROID-BUILD.md) for the details.
 
+### Install the ready-made APK (no build needed)
+
+A prebuilt APK is included in this repository as **`tuman-nfc-debug.apk`**
+(in the project root). You do **not** need Android Studio, the SDK, or a build
+step to use it — just an Android phone.
+
+> **Requirements:** an **Android phone with NFC**. The APK's only extra job over
+> the PWA is to read NFC card taps, so without NFC hardware it is no different
+> from opening the website.
+
+**Install it:**
+
+1. Copy `tuman-nfc-debug.apk` to the phone (USB cable, email, cloud drive, or
+   download it directly from the GitHub repository on the phone).
+2. On the phone, open the file. Android will warn that it is from an *unknown
+   source* — this is expected for any app not installed from the Play Store.
+   Allow the install when prompted (Settings → *Install unknown apps* for your
+   browser or file manager, if asked).
+3. Open the **Tuman Attendance** app.
+4. Sign in with a template account — the same ones the website uses, password
+   `Tuman123`:
+
+   | Role | Email | Password |
+   | --- | --- | --- |
+   | HR Staff | `maria.reyes@tuman.local` | `Tuman123` |
+   | Department Head | `jose.cruz@tuman.local` | `Tuman123` |
+   | Employee | `ana.ramos@tuman.local` | `Tuman123` |
+
+5. Tap **Scan** in the menu, hold an NFC card against the back of the phone, and
+   the matching employee's record opens.
+
+**Things to know about this APK:**
+
+- It is a **debug build** — intended for testing and demonstration, not for
+  publishing to a store. The "unknown source" warning above is normal.
+- It connects to the **same live backend** as the website, so the data it shows
+  is the same. It needs an internet connection to load data.
+- It is a **snapshot**: it reflects the code at the time it was built. If the
+  source changes later, this APK will not include those changes until it is
+  rebuilt (see [`docs/ANDROID-BUILD.md`](ANDROID-BUILD.md)).
+
 ---
 
 ## Troubleshooting
@@ -248,6 +289,8 @@ npx http-server www -p 8080 -c-1      # -> http://localhost:8080
 # Path B-2: fully offline (two terminals)
 npm run emulators                      # terminal 1
 npm run seed:emulator && npm start     # terminal 2 -> http://localhost:8100
+
+# Android phone (with NFC): install tuman-nfc-debug.apk, then sign in below
 
 # Demo logins (password: Tuman123)
 #   maria.reyes@tuman.local   (HR Staff)
