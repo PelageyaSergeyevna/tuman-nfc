@@ -1,0 +1,118 @@
+<app-page-header title="Dashboard">
+  <ion-button routerLink="/records" fill="clear" color="light">
+    <ion-icon slot="icon-only" name="time-outline"></ion-icon>
+  </ion-button>
+</app-page-header>
+
+<ion-content>
+  <div class="tuman-page">
+    <!-- ------------------------------------------------------- Greeting -->
+    <div class="tuman-dash-head">
+      <div>
+        <div class="tuman-page-title">
+          {{ greeting() }}, {{ auth.displayName() || 'there' }}
+        </div>
+        <div class="tuman-page-subtitle">
+          {{ roleLabel() }} · {{ auth.department() }} · {{ friendlyDate(today) }}
+        </div>
+      </div>
+    </div>
+
+    <!-- --------------------------------------------------- Stat counters -->
+    <div class="tuman-stat-grid">
+      <div class="tuman-stat">
+        <div class="tuman-stat-label">Records today</div>
+        <div class="tuman-stat-value">{{ attendance.summary().total }}</div>
+        <div class="tuman-stat-hint">for {{ friendlyDate(today) }}</div>
+      </div>
+      <div class="tuman-stat is-success">
+        <div class="tuman-stat-label">Present</div>
+        <div class="tuman-stat-value">{{ attendance.summary().present }}</div>
+        <div class="tuman-stat-hint">on time</div>
+      </div>
+      <div class="tuman-stat is-warning">
+        <div class="tuman-stat-label">Late</div>
+        <div class="tuman-stat-value">{{ attendance.summary().late }}</div>
+        <div class="tuman-stat-hint">beyond grace period</div>
+      </div>
+      <div class="tuman-stat is-danger">
+        <div class="tuman-stat-label">Absent</div>
+        <div class="tuman-stat-value">{{ attendance.summary().absent }}</div>
+        <div class="tuman-stat-hint">no check-in</div>
+      </div>
+      <div class="tuman-stat is-info">
+        <div class="tuman-stat-label">On leave</div>
+        <div class="tuman-stat-value">{{ attendance.summary().onLeave }}</div>
+        <div class="tuman-stat-hint">approved leave</div>
+      </div>
+    </div>
+
+    <!-- --------------------------------------------------- Quick actions -->
+    <div class="tuman-panel tuman-panel-tight">
+      <div class="tuman-section-title">Quick actions</div>
+      <div class="tuman-action-row">
+        <ion-button routerLink="/records" fill="outline" class="tuman-action-btn">
+          <ion-icon slot="start" name="calendar-outline"></ion-icon>
+          Records
+        </ion-button>
+        <ion-button routerLink="/corrections" fill="outline" class="tuman-action-btn">
+          <ion-icon slot="start" name="create-outline"></ion-icon>
+          Corrections
+        </ion-button>
+        @if (auth.role() === 'hr') {
+          <ion-button routerLink="/approvals" fill="outline" class="tuman-action-btn">
+            <ion-icon slot="start" name="shield-checkmark-outline"></ion-icon>
+            Approvals
+            @if (pendingArchiveApprovals() + pendingCorrections() > 0) {
+              <ion-badge color="danger">{{ pendingArchiveApprovals() + pendingCorrections() }}</ion-badge>
+            }
+          </ion-button>
+        }
+      </div>
+    </div>
+
+    <!-- --------------------------------------------- Today's attendance -->
+    <div class="tuman-panel">
+      <div class="tuman-row-between">
+        <div>
+          <div class="tuman-panel-title">Today's attendance</div>
+          <div class="tuman-panel-sub">{{ friendlyDate(today) }}</div>
+        </div>
+        <ion-button routerLink="/records" fill="clear" size="small">
+          View all
+          <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+
+      @if (loading()) {
+        <div class="tuman-loading"><ion-spinner name="crescent"></ion-spinner></div>
+      } @else if (recentRecords().length === 0) {
+        <div class="tuman-empty">
+          <div class="tuman-empty-title">No attendance recorded yet</div>
+          <div>Records appear here as soon as they are filed for today.</div>
+        </div>
+      } @else {
+        <ion-list lines="none">
+          @for (record of recentRecords(); track record.id) {
+            <ion-item class="tuman-record-item" routerLink="/records" [detail]="false">
+              <ion-label>
+                <h3>{{ record.employeeName || record.employeeId }}</h3>
+                <p>
+                  {{ record.employeeId }} · {{ record.department }} ·
+                  in {{ formatTime(record.timeIn) }}
+                  @if (record.lateMinutes > 0) {
+                    <span class="tuman-late">+{{ record.lateMinutes }}m</span>
+                  }
+                </p>
+              </ion-label>
+              <div slot="end" class="tuman-record-end">
+                <app-status-badge [status]="record.status"></app-status-badge>
+                <div class="tuman-record-source">{{ sourceLabel(record.source) }}</div>
+              </div>
+            </ion-item>
+          }
+        </ion-list>
+      }
+    </div>
+  </div>
+</ion-content>

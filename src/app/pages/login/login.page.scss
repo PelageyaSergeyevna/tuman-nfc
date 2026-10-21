@@ -1,0 +1,90 @@
+.tuman-login-wrap {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+}
+
+.tuman-input-item {
+  --background: transparent;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+  --border-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.tuman-btn-lg {
+  margin-top: 0.75rem;
+  --border-radius: 4px;
+  height: 42px;
+  font-weight: 600;
+}
+
+.tuman-alert-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.82rem;
+  margin-bottom: 0.9rem;
+}
+
+.tuman-alert-inline ion-icon {
+  flex: 0 0 auto;
+  font-size: 1.05rem;
+}
+
+.tuman-demo-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: 'role dept' 'email dept';
+  gap: 0 0.5rem;
+  width: 100%;
+  text-align: left;
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 0.45rem 0.6rem;
+  margin-bottom: 0.35rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.tuman-demo-row:hover {
+  background: #f0f7f0;
+  border-color: #c8e6c9;
+}
+
+.tuman-demo-role {
+  grid-area: role;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.tuman-demo-email {
+  grid-area: email;
+  font-size: 0.72rem;
+  color: #888;
+}
+
+.tuman-demo-dept {
+  grid-area: dept;
+  align-self: center;
+  font-size: 0.7rem;
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.tuman-login-demo code {
+  background: #eee;
+  border-radius: 3px;
+  padding: 0 0.25rem;
+}

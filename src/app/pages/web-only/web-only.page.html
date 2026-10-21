@@ -1,0 +1,25 @@
+<app-page-header title="In the web console"></app-page-header>
+
+<ion-content>
+  <div class="tuman-page tuman-page-narrow">
+    <div class="tuman-panel tuman-notice">
+      <ion-icon name="globe-outline" class="tuman-notice-icon"></ion-icon>
+      <div class="tuman-panel-title">This part lives in the web console</div>
+      <div class="tuman-panel-sub">
+        The app on the phone scans cards and files check-ins. Attendance
+        records, correction requests, cards, shift schedules, people and
+        approvals are managed in the console.
+      </div>
+      <ion-button
+        size="small"
+        class="tuman-btn tuman-btn-sm"
+        [href]="webAppUrl"
+        target="_blank"
+        rel="noopener"
+      >
+        <ion-icon slot="start" name="globe-outline"></ion-icon>
+        Open the web console
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

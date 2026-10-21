@@ -1,0 +1,519 @@
+/* ==========================================================================
+   TUMAN — shared component classes.
+   Ported from the legacy Tuman webapp (frontend/src/App.css) so the hybrid
+   Ionic app keeps the same look and feel: dark navbar/sidebar, green brand,
+   white cards on a light-grey canvas, uppercase section titles and pill
+   status badges.
+   ========================================================================== */
+
+/* --------------------------------------------------------------- Typography */
+.tuman-page-title {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.tuman-page-subtitle {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0.15rem 0 0;
+}
+
+.tuman-section-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #888;
+  margin: 0 0 0.6rem;
+}
+
+.tuman-muted {
+  color: #888;
+}
+
+.tuman-mono {
+  font-family: 'SF Mono', 'Cascadia Mono', Consolas, monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.4px;
+}
+
+/* ------------------------------------------------------------------ Panels */
+.tuman-panel {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tuman-panel-tight {
+  padding: 0.75rem 0.85rem;
+}
+
+.tuman-panel-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.25rem;
+}
+
+.tuman-panel-sub {
+  font-size: 0.78rem;
+  color: #888;
+  margin: 0 0 0.85rem;
+}
+
+/* --------------------------------------------------------------- Stat tiles */
+.tuman-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.tuman-stat {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-left: 3px solid var(--ion-color-primary);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 0.8rem 0.9rem;
+}
+
+.tuman-stat-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #888;
+}
+
+.tuman-stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.25;
+}
+
+.tuman-stat-hint {
+  font-size: 0.72rem;
+  color: #999;
+}
+
+.tuman-stat.is-success {
+  border-left-color: #28a745;
+}
+.tuman-stat.is-danger {
+  border-left-color: #dc3545;
+}
+.tuman-stat.is-warning {
+  border-left-color: #fd7e14;
+}
+.tuman-stat.is-info {
+  border-left-color: #17a2b8;
+}
+.tuman-stat.is-muted {
+  border-left-color: #6c757d;
+}
+
+/* ----------------------------------------------------------- Status badges */
+.tuman-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.tuman-badge-present {
+  background: #d4edda;
+  color: #155724;
+}
+
+.tuman-badge-absent {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.tuman-badge-late {
+  background: #ffe5d0;
+  color: #8a4b08;
+}
+
+.tuman-badge-on_leave {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.tuman-badge-excused {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+.tuman-badge-archived {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.tuman-badge-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.tuman-badge-approved {
+  background: #d4edda;
+  color: #155724;
+}
+
+.tuman-badge-rejected {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* -------------------------------------------------------------- Data table */
+.tuman-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.tuman-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  min-width: 560px;
+}
+
+.tuman-table thead th {
+  background: #f8f9fa;
+  color: #555;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid #e9ecef;
+  white-space: nowrap;
+}
+
+.tuman-table tbody td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid #eee;
+  color: #444;
+  vertical-align: middle;
+}
+
+.tuman-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tuman-table tbody tr.is-archived td {
+  background: #fafafa;
+  color: #999;
+  text-decoration: none;
+}
+
+.tuman-table tbody tr:hover td {
+  background: #f7fbf7;
+}
+
+.tuman-table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------- Buttons */
+/*
+ * The button paints itself: `ion-button` fills its own background, and the
+ * host must not fill one as well. Painting both showed the host colour as a
+ * frame around the button — the "doubled" look — and an outlined button ended
+ * up with a green slab behind a transparent one.
+ *
+ * The size comes from Ionic's own padding, the green from the theme's primary
+ * colour, the white label from the host.
+ */
+.tuman-btn {
+  --border-radius: 4px;
+  --padding-top: 0.5rem;
+  --padding-bottom: 0.5rem;
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+/* An outlined or clear button has no green behind it, so the label is dark. */
+.tuman-btn.button-outline,
+.tuman-btn.button-clear {
+  color: #444;
+}
+
+.tuman-btn.is-block {
+  width: 100%;
+}
+
+.tuman-btn-sm {
+  --padding-top: 0.25rem;
+  --padding-bottom: 0.25rem;
+  --padding-start: 0.6rem;
+  --padding-end: 0.6rem;
+  font-size: 0.78rem;
+}
+
+.tuman-btn-lg {
+  --padding-top: 0.7rem;
+  --padding-bottom: 0.7rem;
+  font-size: 1rem;
+}
+
+.tuman-btn-secondary {
+  color: #444;
+}
+
+/* An outlined "secondary" button reads as neutral, not as a green outline. */
+.tuman-btn-secondary.button-outline {
+  --border-color: #ccc;
+}
+
+/* ------------------------------------------------------------- Form fields */
+.tuman-field {
+  display: block;
+  margin-bottom: 0.85rem;
+}
+
+.tuman-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 0.3rem;
+}
+
+.tuman-input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  color: #333;
+  font-size: 0.9rem;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.tuman-input:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.18);
+}
+
+.tuman-input:disabled {
+  background: #f0f0f0;
+  color: #888;
+}
+
+.tuman-hint {
+  font-size: 0.75rem;
+  color: #888;
+  margin-top: 0.25rem;
+}
+
+.tuman-hint-error {
+  color: #c62828;
+}
+
+/* -------------------------------------------------------------- Empty state */
+.tuman-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #888;
+}
+
+.tuman-empty-icon {
+  font-size: 2rem;
+  color: #ccc;
+  margin-bottom: 0.5rem;
+}
+
+.tuman-empty-title {
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.2rem;
+}
+
+/* ------------------------------------------------------------ Login screen */
+.tuman-login-page {
+  --background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+}
+
+.tuman-login-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  padding: 2rem 1.5rem;
+  max-width: 380px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.tuman-login-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background: #4caf50;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0 auto 0.9rem;
+}
+
+.tuman-login-title {
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.tuman-login-sub {
+  text-align: center;
+  font-size: 0.82rem;
+  color: #888;
+  margin: 0.25rem 0 1.4rem;
+}
+
+.tuman-login-demo {
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid #eee;
+  font-size: 0.75rem;
+  color: #888;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------- App chrome */
+.tuman-topbar {
+  --background: linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%);
+  --color: #ffffff;
+  --border-color: transparent;
+}
+
+.tuman-menu {
+  --background: #ffffff;
+  --border-color: #e0e0e0;
+}
+
+.tuman-menu-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #888;
+  padding: 0.9rem 1rem 0.3rem;
+}
+
+.tuman-menu-item {
+  --background: transparent;
+  --color: #444;
+  --min-height: 42px;
+  --padding-start: 1rem;
+  --inner-padding-end: 1rem;
+}
+
+.tuman-menu-item.selected {
+  --background: #e8f5e9;
+  --color: #2e7d32;
+  font-weight: 600;
+}
+
+.tuman-menu-item ion-icon {
+  color: #888;
+  margin-inline-end: 12px;
+  font-size: 1.15rem;
+}
+
+.tuman-menu-item.selected ion-icon {
+  color: #4caf50;
+}
+
+.tuman-menu-badge {
+  margin-inline-start: auto;
+  background: #dc3545;
+  color: #fff;
+  border-radius: 10px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  line-height: 1.3;
+}
+
+/* --------------------------------------------------------------- Utilities */
+.tuman-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.tuman-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.tuman-spacer {
+  flex: 1;
+}
+
+.tuman-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.tuman-divider {
+  height: 1px;
+  background: #eee;
+  margin: 0.85rem 0;
+}
+
+.tuman-chip {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 12px;
+  background: #f0f0f0;
+  color: #555;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ Modals */
+/*
+ * Ionic sheets a modal by default, which drags a dialog up from the bottom on
+ * a desktop as well. On a wide screen a modal is a centred dialog instead, so
+ * it sits in the middle of the table it belongs to.
+ */
+@media (min-width: 992px) {
+  ion-modal.tuman-modal {
+    --width: 640px;
+    --height: min(80vh, 720px);
+    --border-radius: 8px;
+  }
+
+  ion-modal.tuman-modal::backdrop {
+    background: rgba(0, 0, 0, 0.45);
+  }
+}

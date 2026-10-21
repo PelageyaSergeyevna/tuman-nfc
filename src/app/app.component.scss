@@ -1,0 +1,136 @@
+/* TUMAN — application shell (split pane + sidebar). */
+
+/*
+ * The sidebar of the console. Ionic sizes it with a percentage of the window
+ * (28%), which grows to 400px and more on a wide screen; a fixed width keeps
+ * the records table the room it needs.
+ *
+ * On a phone-sized window the sidebar is an overlay drawer, and 280px is most
+ * of the screen, so it is drawn narrower there and opens at the width it had
+ * before only once the split pane turns inline (992px, matching the `when`
+ * breakpoint in the template).
+ */
+ion-split-pane {
+  --side-width: 240px;
+}
+
+@media (min-width: 992px) {
+  ion-split-pane {
+    --side-width: 280px;
+  }
+}
+
+.tuman-menu-toolbar {
+  --background: #1a1a1a;
+  --color: #ffffff;
+  --border-color: transparent;
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  --min-height: 62px;
+}
+
+.tuman-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #4caf50;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-right: 0.65rem;
+  flex: 0 0 auto;
+}
+
+.tuman-brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.tuman-brand-name {
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  font-size: 0.95rem;
+}
+
+.tuman-brand-sub {
+  font-size: 0.68rem;
+  color: #9aa0a6;
+  letter-spacing: 0.4px;
+}
+
+.tuman-menu ion-list-header {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #888;
+  padding: 0.9rem 1rem 0.3rem;
+}
+
+.tuman-menu-footer {
+  border-top: 1px solid #eee;
+  padding: 0.75rem 1rem;
+  background: #fafafa;
+}
+
+.tuman-user {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.tuman-user-icon {
+  font-size: 1.9rem;
+  color: #bbb;
+  flex: 0 0 auto;
+}
+
+.tuman-user-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.tuman-user-role {
+  font-size: 0.72rem;
+  color: #888;
+}
+
+.tuman-menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: 0.6rem;
+}
+
+.tuman-menu-action {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 38px;
+  padding: 0.35rem 0.5rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #555;
+  font: inherit;
+  font-size: 0.82rem;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.tuman-menu-action:hover {
+  background: #eeeeee;
+}
+
+.tuman-menu-action ion-icon {
+  flex: 0 0 auto;
+  font-size: 1.1rem;
+  color: #888;
+}

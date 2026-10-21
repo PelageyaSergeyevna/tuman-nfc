@@ -1,0 +1,7 @@
+{
+  "name": "tuman-attendance-hybrid",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

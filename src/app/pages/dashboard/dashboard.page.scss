@@ -1,0 +1,71 @@
+.tuman-dash-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.tuman-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tuman-action-btn {
+  --border-radius: 4px;
+  margin: 0;
+  height: 36px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.tuman-action-btn ion-badge {
+  margin-left: 0.4rem;
+}
+
+.tuman-loading {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 0;
+}
+
+.tuman-record-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tuman-record-item:last-child {
+  border-bottom: none;
+}
+
+.tuman-record-item h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 0.1rem;
+}
+
+.tuman-record-item p {
+  font-size: 0.75rem;
+  color: #888;
+  margin: 0;
+}
+
+.tuman-late {
+  color: #fd7e14;
+  font-weight: 600;
+}
+
+.tuman-record-end {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.tuman-record-source {
+  font-size: 0.68rem;
+  color: #aaa;
+}

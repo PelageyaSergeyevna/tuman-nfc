@@ -1,0 +1,28 @@
+.tuman-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.tuman-search-icon {
+  position: absolute;
+  left: 0.6rem;
+  color: #aaa;
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.tuman-search-input {
+  padding-left: 2rem;
+}
+
+.tuman-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0 0.75rem;
+}
+
+.tuman-table-sub {
+  font-size: 0.72rem;
+  color: #999;
+}

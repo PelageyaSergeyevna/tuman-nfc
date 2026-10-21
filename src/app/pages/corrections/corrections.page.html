@@ -1,0 +1,100 @@
+<app-page-header title="Correction Requests"></app-page-header>
+
+<ion-content>
+  <div class="tuman-page">
+    @if (auth.role() === 'employee') {
+      <div class="tuman-panel tuman-panel-tight">
+        <div class="tuman-panel-title">How corrections work</div>
+        <div class="tuman-panel-sub">
+          Your attendance records are read-only. Open a record from
+          <a routerLink="/records">Attendance Records</a>, choose
+          <em>Request correction</em> and explain what went wrong. The Department Head
+          of {{ auth.department() }} reviews the request and applies it if approved.
+        </div>
+      </div>
+    } @else if (auth.role() === 'manager') {
+      <div class="tuman-panel tuman-panel-tight">
+        <div class="tuman-panel-title">Reviewing corrections</div>
+        <div class="tuman-panel-sub">
+          You can review the correction requests raised by the employees of
+          {{ auth.department() }}. Approving a request updates the attendance record
+          immediately.
+        </div>
+      </div>
+    }
+
+    @if (correctionList().length === 0) {
+      <div class="tuman-panel">
+        <app-empty-state
+          title="No correction requests"
+          message="Correction requests will appear here once they are filed."
+        ></app-empty-state>
+      </div>
+    } @else {
+      @for (request of correctionList(); track request.id) {
+        <div class="tuman-panel tuman-request">
+          <div class="tuman-row-between">
+            <div>
+              <div class="tuman-panel-title">{{ request.employeeName }}</div>
+              <div class="tuman-panel-sub">
+                {{ request.employeeId }} · {{ request.department }} ·
+                {{ friendlyDate(request.date) }}
+              </div>
+            </div>
+            <span
+              class="tuman-badge"
+              [class.tuman-badge-pending]="request.status === 'pending'"
+              [class.tuman-badge-approved]="request.status === 'approved'"
+              [class.tuman-badge-rejected]="request.status === 'rejected'"
+            >
+              {{ request.status }}
+            </span>
+          </div>
+
+          <div class="tuman-request-reason">
+            <div class="tuman-detail-label">Reason</div>
+            {{ request.reason }}
+          </div>
+
+          <div class="tuman-request-meta">
+            Filed by {{ request.requestedByName || 'Unknown' }} on
+            {{ formatDateTime(request.requestedAt) }}
+            @if (request.reviewedAt) {
+              · reviewed by {{ request.reviewedByName }} on
+              {{ formatDateTime(request.reviewedAt) }}
+            }
+          </div>
+
+          @if (request.reviewNote) {
+            <div class="tuman-request-note">Note: {{ request.reviewNote }}</div>
+          }
+
+          @if (request.status === 'pending' && canReview()) {
+            <div class="tuman-request-actions">
+              <ion-button
+                size="small"
+                class="tuman-btn tuman-btn-sm"
+                [disabled]="busyId() === request.id"
+                (click)="approve(request.id)"
+              >
+                <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+                Approve
+              </ion-button>
+              <ion-button
+                size="small"
+                fill="outline"
+                color="danger"
+                class="tuman-btn-sm"
+                [disabled]="busyId() === request.id"
+                (click)="reject(request.id)"
+              >
+                <ion-icon slot="start" name="close-outline"></ion-icon>
+                Reject
+              </ion-button>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+</ion-content>

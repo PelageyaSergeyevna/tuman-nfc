@@ -1,0 +1,67 @@
+<ion-app>
+  <ion-split-pane contentId="main-content" when="(min-width: 992px)">
+    @if (showShell()) {
+      <ion-menu contentId="main-content" type="overlay" class="tuman-menu">
+        <ion-header>
+          <ion-toolbar class="tuman-menu-toolbar">
+            <div class="tuman-logo">T</div>
+            <div class="tuman-brand">
+              <div class="tuman-brand-name">TUMAN</div>
+              <div class="tuman-brand-sub">Attendance System</div>
+            </div>
+          </ion-toolbar>
+        </ion-header>
+
+        <ion-content>
+          <ion-list lines="none">
+            <ion-list-header>
+              <ion-label>Menu</ion-label>
+            </ion-list-header>
+
+            @for (item of menuItems(); track item.path) {
+              <ion-item
+                class="tuman-menu-item"
+                [routerLink]="item.path"
+                routerLinkActive="selected"
+                [routerLinkActiveOptions]="{ exact: false }"
+                lines="none"
+                detail="false"
+              >
+                <ion-icon [name]="item.icon"></ion-icon>
+                <ion-label>{{ item.label }}</ion-label>
+                @if (item.badge && item.badge() > 0) {
+                  <ion-badge class="tuman-menu-badge">{{ item.badge() }}</ion-badge>
+                }
+              </ion-item>
+            }
+          </ion-list>
+        </ion-content>
+
+        <ion-footer class="tuman-menu-footer">
+          <div class="tuman-user">
+            <ion-icon name="person-circle-outline" class="tuman-user-icon"></ion-icon>
+            <div class="tuman-user-meta">
+              <div class="tuman-user-name">{{ auth.displayName() || 'User' }}</div>
+              <div class="tuman-user-role">{{ roleLabel() }} · {{ auth.department() }}</div>
+            </div>
+          </div>
+
+          <div class="tuman-menu-actions">
+            @if (isPhone) {
+              <a class="tuman-menu-action" [href]="webAppUrl" target="_blank" rel="noopener">
+                <ion-icon name="globe-outline"></ion-icon>
+                <span>Open the web console</span>
+              </a>
+            }
+            <button type="button" class="tuman-menu-action" (click)="signOut()">
+              <ion-icon name="log-out-outline"></ion-icon>
+              <span>Sign out</span>
+            </button>
+          </div>
+        </ion-footer>
+      </ion-menu>
+    }
+
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+  </ion-split-pane>
+</ion-app>

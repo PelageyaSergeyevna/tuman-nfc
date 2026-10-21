@@ -1,0 +1,261 @@
+<app-page-header title="Approvals"></app-page-header>
+
+<ion-content>
+  <div class="tuman-page">
+    <!-- ------------------------------------------------------ Tab switch -->
+    <div class="tuman-tab-row">
+      <button
+        type="button"
+        class="tuman-tab"
+        [class.is-active]="tab() === 'archive'"
+        (click)="setTab('archive')"
+      >
+        Archive requests
+      </button>
+      <button
+        type="button"
+        class="tuman-tab"
+        [class.is-active]="tab() === 'correction'"
+        (click)="setTab('correction')"
+      >
+        Correction requests
+      </button>
+    </div>
+
+    <!-- --------------------------------------------------- Status filter -->
+    <div class="tuman-filter-row">
+      <button
+        type="button"
+        class="tuman-chip-btn"
+        [class.is-active]="filter() === 'pending'"
+        (click)="setFilter('pending')"
+      >
+        Pending
+      </button>
+      <button
+        type="button"
+        class="tuman-chip-btn"
+        [class.is-active]="filter() === 'approved'"
+        (click)="setFilter('approved')"
+      >
+        Approved
+      </button>
+      <button
+        type="button"
+        class="tuman-chip-btn"
+        [class.is-active]="filter() === 'rejected'"
+        (click)="setFilter('rejected')"
+      >
+        Rejected
+      </button>
+      <button
+        type="button"
+        class="tuman-chip-btn"
+        [class.is-active]="filter() === 'all'"
+        (click)="setFilter('all')"
+      >
+        All
+      </button>
+    </div>
+
+    @if (tab() === 'archive') {
+      @if (visibleArchive().length === 0) {
+        <div class="tuman-panel">
+          <app-empty-state
+            title="No archive requests"
+            message="Archive requests raised by Department Heads appear here for approval."
+          ></app-empty-state>
+        </div>
+      } @else {
+        @for (request of visibleArchive(); track request.id) {
+          <div class="tuman-panel tuman-request">
+            <div class="tuman-row-between">
+              <div>
+                <div class="tuman-panel-title">{{ request.employeeName }}</div>
+                <div class="tuman-panel-sub">
+                  {{ request.employeeId }} · {{ request.department }} ·
+                  {{ friendlyDate(request.date) }}
+                </div>
+              </div>
+              <span
+                class="tuman-badge"
+                [class.tuman-badge-pending]="request.status === 'pending'"
+                [class.tuman-badge-approved]="request.status === 'approved'"
+                [class.tuman-badge-rejected]="request.status === 'rejected'"
+              >
+                {{ request.status }}
+              </span>
+            </div>
+
+            <div class="tuman-request-reason">
+              <div class="tuman-detail-label">Reason</div>
+              {{ request.reason }}
+            </div>
+
+            <div class="tuman-request-meta">
+              Requested by {{ request.requestedByName || 'Unknown' }} on
+              {{ formatDateTime(request.requestedAt) }}
+              @if (request.reviewedAt) {
+                · reviewed by {{ request.reviewedByName }} on
+                {{ formatDateTime(request.reviewedAt) }}
+              }
+            </div>
+
+            @if (request.reviewNote) {
+              <div class="tuman-request-note">Note: {{ request.reviewNote }}</div>
+            }
+
+            @if (request.status === 'pending') {
+              <div class="tuman-request-actions">
+                <ion-button
+                  size="small"
+                  class="tuman-btn tuman-btn-sm"
+                  [disabled]="busyId() === request.id"
+                  (click)="approveArchive(request.id)"
+                >
+                  <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+                  Approve
+                </ion-button>
+                <ion-button
+                  size="small"
+                  fill="outline"
+                  color="danger"
+                  class="tuman-btn-sm"
+                  [disabled]="busyId() === request.id"
+                  (click)="rejectArchive(request.id)"
+                >
+                  <ion-icon slot="start" name="close-outline"></ion-icon>
+                  Reject
+                </ion-button>
+              </div>
+            }
+          </div>
+        }
+      }
+    } @else {
+      @if (visibleCorrection().length === 0) {
+        <div class="tuman-panel">
+          <app-empty-state
+            title="No correction requests"
+            message="Correction requests raised by employees appear here for review."
+          ></app-empty-state>
+        </div>
+      } @else {
+        @for (request of visibleCorrection(); track request.id) {
+          <div class="tuman-panel tuman-request">
+            <div class="tuman-row-between">
+              <div>
+                <div class="tuman-panel-title">{{ request.employeeName }}</div>
+                <div class="tuman-panel-sub">
+                  {{ request.employeeId }} · {{ request.department }} ·
+                  {{ friendlyDate(request.date) }}
+                </div>
+              </div>
+              <span
+                class="tuman-badge"
+                [class.tuman-badge-pending]="request.status === 'pending'"
+                [class.tuman-badge-approved]="request.status === 'approved'"
+                [class.tuman-badge-rejected]="request.status === 'rejected'"
+              >
+                {{ request.status }}
+              </span>
+            </div>
+
+            <div class="tuman-correction-diff">
+              <div class="tuman-detail-label">Requested changes</div>
+              <table class="tuman-diff-table">
+                <thead>
+                  <tr>
+                    <th>Field</th>
+                    <th>Current</th>
+                    <th>Proposed</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @if (request.proposed.status !== request.current.status) {
+                    <tr>
+                      <td>Status</td>
+                      <td>{{ request.current.status }}</td>
+                      <td class="is-new">{{ request.proposed.status }}</td>
+                    </tr>
+                  }
+                  @if (request.proposed.timeIn !== request.current.timeIn) {
+                    <tr>
+                      <td>Time in</td>
+                      <td>{{ request.current.timeIn || '—' }}</td>
+                      <td class="is-new">{{ request.proposed.timeIn || '—' }}</td>
+                    </tr>
+                  }
+                  @if (request.proposed.timeOut !== request.current.timeOut) {
+                    <tr>
+                      <td>Time out</td>
+                      <td>{{ request.current.timeOut || '—' }}</td>
+                      <td class="is-new">{{ request.proposed.timeOut || '—' }}</td>
+                    </tr>
+                  }
+                  @if (request.proposed.lateMinutes !== request.current.lateMinutes) {
+                    <tr>
+                      <td>Late minutes</td>
+                      <td>{{ request.current.lateMinutes }}</td>
+                      <td class="is-new">{{ request.proposed.lateMinutes }}</td>
+                    </tr>
+                  }
+                  @if (request.proposed.notes !== request.current.notes) {
+                    <tr>
+                      <td>Notes</td>
+                      <td>{{ request.current.notes || '—' }}</td>
+                      <td class="is-new">{{ request.proposed.notes || '—' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <div class="tuman-request-reason">
+              <div class="tuman-detail-label">Reason</div>
+              {{ request.reason }}
+            </div>
+
+            <div class="tuman-request-meta">
+              Requested by {{ request.requestedByName || 'Unknown' }} on
+              {{ formatDateTime(request.requestedAt) }}
+              @if (request.reviewedAt) {
+                · reviewed by {{ request.reviewedByName }} on
+                {{ formatDateTime(request.reviewedAt) }}
+              }
+            </div>
+
+            @if (request.reviewNote) {
+              <div class="tuman-request-note">Note: {{ request.reviewNote }}</div>
+            }
+
+            @if (request.status === 'pending') {
+              <div class="tuman-request-actions">
+                <ion-button
+                  size="small"
+                  class="tuman-btn tuman-btn-sm"
+                  [disabled]="busyId() === request.id"
+                  (click)="approveCorrection(request.id)"
+                >
+                  <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+                  Approve
+                </ion-button>
+                <ion-button
+                  size="small"
+                  fill="outline"
+                  color="danger"
+                  class="tuman-btn-sm"
+                  [disabled]="busyId() === request.id"
+                  (click)="rejectCorrection(request.id)"
+                >
+                  <ion-icon slot="start" name="close-outline"></ion-icon>
+                  Reject
+                </ion-button>
+              </div>
+            }
+          </div>
+        }
+      }
+    }
+  </div>
+</ion-content>

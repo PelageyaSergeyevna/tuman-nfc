@@ -1,0 +1,128 @@
+.tuman-tab-row {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.tuman-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #888;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.tuman-tab.is-active {
+  color: #4caf50;
+  border-bottom-color: #4caf50;
+}
+
+.tuman-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.tuman-chip-btn {
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #555;
+  border-radius: 12px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.tuman-chip-btn.is-active {
+  background: #4caf50;
+  border-color: #4caf50;
+  color: #fff;
+}
+
+.tuman-request {
+  margin-bottom: 0.75rem;
+}
+
+.tuman-request-reason {
+  background: #fafafa;
+  border-left: 3px solid #4caf50;
+  border-radius: 4px;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.85rem;
+  color: #444;
+  margin: 0.6rem 0;
+}
+
+.tuman-request-meta {
+  font-size: 0.74rem;
+  color: #999;
+}
+
+.tuman-request-note {
+  font-size: 0.78rem;
+  color: #666;
+  margin-top: 0.35rem;
+  font-style: italic;
+}
+
+.tuman-request-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #eee;
+}
+
+.tuman-request-actions ion-button {
+  margin: 0;
+}
+
+.tuman-correction-diff {
+  margin: 0.6rem 0;
+}
+
+.tuman-diff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.tuman-diff-table th {
+  text-align: left;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #888;
+  background: #f8f9fa;
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.tuman-diff-table td {
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid #f0f0f0;
+  color: #666;
+}
+
+.tuman-diff-table td.is-new {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.tuman-detail-label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: #999;
+  margin-bottom: 0.2rem;
+}

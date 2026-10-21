@@ -1,0 +1,50 @@
+.tuman-request {
+  margin-bottom: 0.75rem;
+}
+
+.tuman-request-reason {
+  background: #fafafa;
+  border-left: 3px solid #4caf50;
+  border-radius: 4px;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.85rem;
+  color: #444;
+  margin: 0.6rem 0;
+}
+
+.tuman-request-meta {
+  font-size: 0.74rem;
+  color: #999;
+}
+
+.tuman-request-note {
+  font-size: 0.78rem;
+  color: #666;
+  margin-top: 0.35rem;
+  font-style: italic;
+}
+
+.tuman-request-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #eee;
+}
+
+.tuman-request-actions ion-button {
+  margin: 0;
+}
+
+.tuman-detail-label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: #999;
+  margin-bottom: 0.2rem;
+}
+
+.tuman-panel-sub a {
+  color: #4caf50;
+}

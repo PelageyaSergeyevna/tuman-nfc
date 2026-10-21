@@ -1,0 +1,114 @@
+<app-page-header title="NFC Cards"></app-page-header>
+
+<ion-content>
+  <div class="tuman-page">
+    @if (isStaff()) {
+      <div class="tuman-panel tuman-panel-tight">
+        <div class="tuman-section-title">Assign a card</div>
+        <div class="tuman-card-form">
+          <div class="tuman-field">
+            <label class="tuman-label" for="uid">Card UID (hex)</label>
+            <input
+              id="uid"
+              class="tuman-input tuman-mono"
+              type="text"
+              placeholder="A1B2C3D4 or 52:C2:8E:DE"
+              maxlength="32"
+              autocapitalize="characters"
+              autocomplete="off"
+              spellcheck="false"
+              [(ngModel)]="newUid"
+              name="newUid"
+            />
+            @if (uidPreview()) {
+              <div class="tuman-hint" [class.tuman-hint-error]="!uidValid()">
+                @if (uidValid()) {
+                  Will be saved as <span class="tuman-mono">{{ uidPreview() }}</span>
+                } @else {
+                  <span class="tuman-mono">{{ uidPreview() }}</span> — this UID cannot be
+                  used. It must be 4, 7 or 10 hex bytes.
+                }
+              </div>
+            }
+          </div>
+
+          <div class="tuman-field">
+            <label class="tuman-label" for="employee">Employee</label>
+            <select id="employee" class="tuman-input" [(ngModel)]="assignTo" name="assignTo">
+              <option value="">Choose an employee…</option>
+              @for (employee of employees(); track employee.uid) {
+                <option [value]="employee.employeeId">
+                  {{ employee.displayName }} ({{ employee.employeeId }})
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <ion-button class="tuman-btn" [disabled]="!newUid || !assignTo" (click)="assign()">
+          <ion-icon slot="start" name="card-outline"></ion-icon>
+          Assign card
+        </ion-button>
+        <div class="tuman-hint">
+          The UID is the identifier printed on the Mifare Classic card. Separators are
+          optional — <span class="tuman-mono">52:C2:8E:DE</span> and
+          <span class="tuman-mono">52C28EDE</span> are the same card. It is also read
+          automatically when a card is tapped in the scanner.
+        </div>
+      </div>
+    }
+
+    <div class="tuman-panel">
+      <div class="tuman-panel-title">
+        {{ isStaff() ? 'Cards in ' + auth.department() : 'My card' }}
+      </div>
+      <div class="tuman-panel-sub">
+        {{ cards().length }} card{{ cards().length === 1 ? '' : 's' }} on file
+      </div>
+
+      @if (cards().length === 0) {
+        <app-empty-state
+          title="No cards assigned"
+          message="Cards appear here once they are assigned to an employee."
+        ></app-empty-state>
+      } @else {
+        <div class="tuman-card-list">
+          @for (card of cards(); track card.id) {
+            <div class="tuman-card-row">
+              <div class="tuman-card-uid tuman-mono">{{ formatUid(card.id) }}</div>
+              <div class="tuman-card-meta">
+                <div class="tuman-card-name">{{ card.employeeName }}</div>
+                <div class="tuman-card-sub">
+                  {{ card.employeeId }} · {{ card.department }} · {{ card.cardType }}
+                </div>
+              </div>
+              <div class="tuman-card-actions">
+                @if (!card.isActive) {
+                  <span class="tuman-badge tuman-badge-rejected">inactive</span>
+                }
+                @if (isStaff()) {
+                  <ion-button
+                    size="small"
+                    fill="clear"
+                    color="medium"
+                    (click)="toggleActive(card.id, card.isActive)"
+                  >
+                    {{ card.isActive ? 'Disable' : 'Enable' }}
+                  </ion-button>
+                  <ion-button
+                    size="small"
+                    fill="clear"
+                    color="danger"
+                    (click)="release(card.id, card.employeeName)"
+                  >
+                    <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                  </ion-button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</ion-content>

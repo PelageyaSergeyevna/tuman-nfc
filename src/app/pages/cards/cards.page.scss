@@ -1,0 +1,58 @@
+.tuman-card-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0 0.75rem;
+}
+
+.tuman-card-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.tuman-card-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  flex-wrap: wrap;
+}
+
+.tuman-card-row:last-child {
+  border-bottom: none;
+}
+
+.tuman-card-uid {
+  background: #1a1a1a;
+  color: #7ee787;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
+.tuman-card-meta {
+  flex: 1 1 160px;
+}
+
+.tuman-card-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.tuman-card-sub {
+  font-size: 0.74rem;
+  color: #888;
+}
+
+.tuman-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Card UIDs are hex — show them upper-case whatever the keyboard did. */
+#uid {
+  text-transform: uppercase;
+}

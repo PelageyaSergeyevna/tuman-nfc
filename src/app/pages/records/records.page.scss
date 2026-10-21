@@ -1,0 +1,138 @@
+.tuman-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0 0.75rem;
+}
+
+.tuman-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.82rem;
+  color: #555;
+  cursor: pointer;
+  padding-top: 0.35rem;
+}
+
+.tuman-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: #4caf50;
+}
+
+.tuman-scope-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.tuman-chip-btn {
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #555;
+  border-radius: 12px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.tuman-chip-btn.is-active {
+  background: #4caf50;
+  border-color: #4caf50;
+  color: #fff;
+}
+
+.tuman-stat-grid--compact {
+  margin-bottom: 1rem;
+}
+
+.tuman-stat-grid--compact .tuman-stat {
+  padding: 0.55rem 0.7rem;
+}
+
+.tuman-stat-grid--compact .tuman-stat-value {
+  font-size: 1.25rem;
+}
+
+.tuman-table-sub {
+  font-size: 0.72rem;
+  color: #999;
+}
+
+/* A row is a button: it opens the record, and the focus ring says so. */
+.tuman-table tbody tr[tabindex] {
+  outline: none;
+}
+
+.tuman-table tbody tr[tabindex]:focus-visible {
+  outline: 2px solid #4caf50;
+  outline-offset: -2px;
+}
+
+.tuman-late {
+  color: #fd7e14;
+  font-weight: 600;
+  margin-left: 0.25rem;
+}
+
+.tuman-loading {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+/* ------------------------------------------------------- Mobile cards */
+.tuman-record-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 0.7rem 0.8rem;
+  margin-bottom: 0.6rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.tuman-record-card:active {
+  background: #f7fbf7;
+}
+
+.tuman-record-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.tuman-record-meta {
+  font-size: 0.74rem;
+  color: #888;
+}
+
+.tuman-record-foot {
+  margin-top: 0.45rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+/*
+ * The table is for a wide screen, the cards are for a phone. The class names
+ * say which layout each element belongs to, so the phone hides the table and
+ * the desktop hides the cards.
+ */
+@media (max-width: 767px) {
+  .tuman-hide-mobile {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .tuman-hide-desktop {
+    display: none;
+  }
+}

@@ -1,0 +1,66 @@
+<app-page-header title="Shift Schedules"></app-page-header>
+
+<ion-content>
+  <div class="tuman-page tuman-page-narrow">
+    <div class="tuman-panel">
+      <div class="tuman-panel-title">Shift schedules</div>
+      <div class="tuman-panel-sub">
+        The schedule decides the check-in time, the meal break and the grace period
+        before an employee is marked late.
+      </div>
+
+      @for (schedule of schedules; track schedule.id) {
+        <div class="tuman-shift-card">
+          <div class="tuman-row-between">
+            <div class="tuman-shift-name">{{ schedule.shiftName }}</div>
+            <span class="tuman-chip">{{ schedule.shiftType }}</span>
+          </div>
+
+          <div class="tuman-form-grid">
+            <div class="tuman-field">
+              <label class="tuman-label">Shift name</label>
+              <input class="tuman-input" [(ngModel)]="schedule.shiftName" [name]="'name' + schedule.id" />
+            </div>
+            <div class="tuman-field">
+              <label class="tuman-label">Start</label>
+              <input class="tuman-input" type="time" [(ngModel)]="schedule.startTime" [name]="'start' + schedule.id" />
+            </div>
+            <div class="tuman-field">
+              <label class="tuman-label">End</label>
+              <input class="tuman-input" type="time" [(ngModel)]="schedule.endTime" [name]="'end' + schedule.id" />
+            </div>
+            <div class="tuman-field">
+              <label class="tuman-label">Break start</label>
+              <input class="tuman-input" type="time" [(ngModel)]="schedule.breakStart" [name]="'bs' + schedule.id" />
+            </div>
+            <div class="tuman-field">
+              <label class="tuman-label">Break end</label>
+              <input class="tuman-input" type="time" [(ngModel)]="schedule.breakEnd" [name]="'be' + schedule.id" />
+            </div>
+            <div class="tuman-field">
+              <label class="tuman-label">Grace (minutes)</label>
+              <input
+                class="tuman-input"
+                type="number"
+                min="0"
+                [(ngModel)]="schedule.gracePeriodMinutes"
+                [name]="'grace' + schedule.id"
+              />
+            </div>
+          </div>
+
+          <label class="tuman-checkbox">
+            <input
+              type="checkbox"
+              [(ngModel)]="schedule.isActive"
+              [name]="'active' + schedule.id"
+            />
+            <span>Active</span>
+          </label>
+        </div>
+      }
+
+      <ion-button expand="block" class="tuman-btn" (click)="save()">Save schedules</ion-button>
+    </div>
+  </div>
+</ion-content>

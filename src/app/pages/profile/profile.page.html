@@ -1,0 +1,67 @@
+<app-page-header title="My Profile"></app-page-header>
+
+<ion-content>
+  <div class="tuman-page tuman-page-narrow">
+    <div class="tuman-panel">
+      <div class="tuman-profile-head">
+        <div class="tuman-profile-avatar">{{ (auth.displayName() || '?').charAt(0) }}</div>
+        <div>
+          <div class="tuman-panel-title">{{ auth.displayName() || 'TUMAN user' }}</div>
+          <div class="tuman-panel-sub">{{ auth.profile()?.email }}</div>
+        </div>
+      </div>
+
+      <div class="tuman-divider"></div>
+
+      <div class="tuman-form-grid">
+        <div class="tuman-field">
+          <label class="tuman-label">Employee code</label>
+          <input class="tuman-input" [value]="auth.employeeId() ?? ''" disabled />
+        </div>
+        <div class="tuman-field">
+          <label class="tuman-label">Role</label>
+          <input class="tuman-input" [value]="roleLabel()" disabled />
+        </div>
+        <div class="tuman-field">
+          <label class="tuman-label">Department</label>
+          <input class="tuman-input" [value]="auth.department() ?? ''" disabled />
+        </div>
+      </div>
+    </div>
+
+    <div class="tuman-panel">
+      <div class="tuman-panel-title">Edit my details</div>
+      <div class="tuman-panel-sub">
+        You can keep your own display name and contact number up to date. Role and
+        department are managed by HR Staff.
+      </div>
+
+      <div class="tuman-field">
+        <label class="tuman-label" for="displayName">Display name</label>
+        <input
+          id="displayName"
+          class="tuman-input"
+          [(ngModel)]="displayName"
+          name="displayName"
+          (ngModelChange)="sync()"
+        />
+      </div>
+
+      <div class="tuman-field">
+        <label class="tuman-label" for="phone">Contact number</label>
+        <input
+          id="phone"
+          class="tuman-input"
+          [(ngModel)]="phone"
+          name="phone"
+          (ngModelChange)="sync()"
+        />
+      </div>
+
+      <ion-button expand="block" class="tuman-btn" (click)="save()">
+        <ion-icon slot="start" name="save-outline"></ion-icon>
+        Save changes
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

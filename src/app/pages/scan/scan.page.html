@@ -1,0 +1,138 @@
+<app-page-header title="NFC Scanner"></app-page-header>
+
+<ion-content>
+  <div class="tuman-page tuman-page-narrow">
+    <!-- ---------------------------------------------- Unsupported platform -->
+    @if (supported() === false) {
+      <div class="tuman-panel tuman-notice">
+        <ion-icon name="warning-outline" class="tuman-notice-icon"></ion-icon>
+        <div class="tuman-panel-title">NFC scanning is not available here</div>
+        <div class="tuman-panel-sub">
+          The scanner needs the Android app. Install the APK on a phone with NFC
+          hardware; the browser version of TUMAN is used for records, approvals and
+          corrections.
+        </div>
+      </div>
+    }
+
+    <!-- ------------------------------------------------------ NFC is off -->
+    @if (supported() === true && enabled() === false) {
+      <div class="tuman-panel tuman-notice">
+        <ion-icon name="warning-outline" class="tuman-notice-icon"></ion-icon>
+        <div class="tuman-panel-title">NFC is switched off</div>
+        <div class="tuman-panel-sub">Turn NFC on in the system settings, then try again.</div>
+        <ion-button size="small" class="tuman-btn tuman-btn-sm" (click)="openSettings()">
+          Open settings
+        </ion-button>
+      </div>
+    }
+
+    <!-- --------------------------------------------------- Scanner status -->
+    @if (supported() === true) {
+      <div class="tuman-scan-panel" [class.is-scanning]="readerActive()">
+        <div class="tuman-scan-graphic">
+          <ion-icon name="rfid-outline"></ion-icon>
+        </div>
+        <div class="tuman-scan-title">
+          @switch (state()) {
+            @case ('success') {
+              Check-in recorded
+            }
+            @case ('unassigned') {
+              Card not assigned
+            }
+            @case ('error') {
+              Something went wrong
+            }
+            @default {
+              @if (readerActive()) {
+                Scanning…
+              } @else {
+                Ready to scan
+              }
+            }
+          }
+        </div>
+        <div class="tuman-scan-sub">
+          @if (message()) {
+            {{ message() }}
+          } @else {
+            Hold an employee card against the back of the phone.
+          }
+        </div>
+
+        <div class="tuman-scan-actions">
+          @if (readerActive()) {
+            <ion-button class="tuman-btn" color="secondary" (click)="toggleScanning()">
+              <ion-icon slot="start" name="stop-circle-outline"></ion-icon>
+              Stop
+            </ion-button>
+          } @else {
+            <ion-button class="tuman-btn" (click)="toggleScanning()">
+              <ion-icon slot="start" name="rfid-outline"></ion-icon>
+              Start scanning
+            </ion-button>
+          }
+          @if (state() === 'success' || state() === 'error' || state() === 'unassigned') {
+            <ion-button fill="outline" class="tuman-btn tuman-btn-secondary" (click)="reset()">
+              Clear
+            </ion-button>
+          }
+        </div>
+      </div>
+
+      <!-- ------------------------------------------------- Scan result -->
+      @if (state() === 'success') {
+        <div class="tuman-panel">
+          <div class="tuman-row-between">
+            <div>
+              <div class="tuman-panel-title">{{ employeeName() }}</div>
+              <div class="tuman-panel-sub">
+                {{ employeeId() }} · {{ today }}
+              </div>
+            </div>
+            @if (status(); as recordStatus) {
+              <app-status-badge [status]="recordStatus"></app-status-badge>
+            }
+          </div>
+          <div class="tuman-divider"></div>
+          <div class="tuman-scan-stats">
+            <div>
+              <div class="tuman-detail-label">Time in</div>
+              <div class="tuman-detail-value">{{ timeIn() }}</div>
+            </div>
+            <div>
+              <div class="tuman-detail-label">Late by</div>
+              <div class="tuman-detail-value">{{ lateMinutes() }} min</div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ------------------------------------------- Assign unknown card -->
+      @if (state() === 'unassigned') {
+        <div class="tuman-panel">
+          <div class="tuman-panel-title">Card {{ scanned()?.uid }} is not assigned</div>
+          <div class="tuman-panel-sub">
+            {{ message() || 'A card that belongs to nobody cannot file a check-in.' }}
+          </div>
+          <ion-button expand="block" class="tuman-btn" (click)="addCard()">
+            <ion-icon slot="start" name="card-outline"></ion-icon>
+            Add card
+          </ion-button>
+          <ion-button
+            expand="block"
+            fill="outline"
+            class="tuman-btn tuman-btn-secondary"
+            [href]="webAppUrl"
+            target="_blank"
+            rel="noopener"
+          >
+            <ion-icon slot="start" name="globe-outline"></ion-icon>
+            Open the web console
+          </ion-button>
+        </div>
+      }
+    }
+  </div>
+</ion-content>

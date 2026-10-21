@@ -1,0 +1,224 @@
+<app-page-header title="Attendance Records">
+  @if (canCreate()) {
+    <ion-button (click)="openEditor()" fill="clear" color="light">
+      <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+    </ion-button>
+  }
+</app-page-header>
+
+<ion-content>
+  <div class="tuman-page">
+    <!-- ---------------------------------------------------------- Filters -->
+    <div class="tuman-panel tuman-panel-tight">
+      <div class="tuman-section-title">Filters</div>
+
+      <div class="tuman-filter-grid">
+        <div class="tuman-field">
+          <label class="tuman-label" for="from">From</label>
+          <input
+            id="from"
+            class="tuman-input"
+            type="date"
+            [(ngModel)]="dateFrom"
+            name="dateFrom"
+            (change)="refresh()"
+          />
+        </div>
+
+        <div class="tuman-field">
+          <label class="tuman-label" for="to">To</label>
+          <input
+            id="to"
+            class="tuman-input"
+            type="date"
+            [(ngModel)]="dateTo"
+            name="dateTo"
+            (change)="refresh()"
+          />
+        </div>
+
+        <div class="tuman-field">
+          <label class="tuman-label" for="status">Status</label>
+          <select
+            id="status"
+            class="tuman-input"
+            [(ngModel)]="status"
+            name="status"
+            (change)="refresh()"
+          >
+            @for (option of statusOptions; track option) {
+              <option [value]="option">
+                {{ option === 'all' ? 'All statuses' : statusLabels[option] }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="tuman-field">
+          <label class="tuman-label" for="archived">Archived</label>
+          <label class="tuman-checkbox" for="archived">
+            <input
+              id="archived"
+              type="checkbox"
+              [(ngModel)]="includeArchived"
+              name="includeArchived"
+              (change)="refresh()"
+            />
+            <span>Include archived records</span>
+          </label>
+        </div>
+      </div>
+
+      @if (auth.role() === 'hr') {
+        <div class="tuman-divider"></div>
+        <div class="tuman-section-title">Scope</div>
+        <div class="tuman-scope-row">
+          <button
+            type="button"
+            class="tuman-chip-btn"
+            [class.is-active]="scope === 'all'"
+            (click)="setScope('all')"
+          >
+            All departments
+          </button>
+          <button
+            type="button"
+            class="tuman-chip-btn"
+            [class.is-active]="scope === 'department'"
+            (click)="setScope('department')"
+          >
+            {{ auth.department() }}
+          </button>
+        </div>
+        <div class="tuman-hint">
+          HR Staff read every department but may only create and edit records for
+          {{ auth.department() }}.
+        </div>
+      } @else if (auth.role() === 'manager') {
+        <div class="tuman-hint">
+          You are viewing {{ auth.department() }}. Records from other departments are hidden.
+        </div>
+      } @else {
+        <div class="tuman-hint">
+          You are viewing your own attendance records.
+        </div>
+      }
+    </div>
+
+    <!-- ----------------------------------------------------------- Summary -->
+    <div class="tuman-stat-grid tuman-stat-grid--compact">
+      <div class="tuman-stat">
+        <div class="tuman-stat-label">Records</div>
+        <div class="tuman-stat-value">{{ attendance.summary().total }}</div>
+      </div>
+      <div class="tuman-stat is-success">
+        <div class="tuman-stat-label">Present</div>
+        <div class="tuman-stat-value">{{ attendance.summary().present }}</div>
+      </div>
+      <div class="tuman-stat is-warning">
+        <div class="tuman-stat-label">Late</div>
+        <div class="tuman-stat-value">{{ attendance.summary().late }}</div>
+      </div>
+      <div class="tuman-stat is-danger">
+        <div class="tuman-stat-label">Absent</div>
+        <div class="tuman-stat-value">{{ attendance.summary().absent }}</div>
+      </div>
+      <div class="tuman-stat is-info">
+        <div class="tuman-stat-label">On leave</div>
+        <div class="tuman-stat-value">{{ attendance.summary().onLeave }}</div>
+      </div>
+      <div class="tuman-stat is-muted">
+        <div class="tuman-stat-label">Excused</div>
+        <div class="tuman-stat-value">{{ attendance.summary().excused }}</div>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------------------- Table -->
+    @if (loading()) {
+      <div class="tuman-loading"><ion-spinner name="crescent"></ion-spinner></div>
+    } @else if (records().length === 0) {
+      <div class="tuman-panel">
+        <app-empty-state
+          title="No attendance records found"
+          message="Try widening the date range or clearing the filters."
+        ></app-empty-state>
+      </div>
+    } @else {
+      <!-- Desktop / tablet table -->
+      <div class="tuman-table-wrap tuman-hide-mobile">
+        <table class="tuman-table">
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Department</th>
+              <th>Date</th>
+              <th>Time in</th>
+              <th>Time out</th>
+              <th>Status</th>
+              <th>Source</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (record of records(); track record.id) {
+              <tr
+                [class.is-archived]="record.archived"
+                tabindex="0"
+                (click)="openDetail(record)"
+                (keydown.enter)="openDetail(record)"
+                (keydown.space)="$event.preventDefault(); openDetail(record)"
+                style="cursor: pointer"
+              >
+                <td>
+                  <strong>{{ record.employeeName || record.employeeId }}</strong>
+                  <div class="tuman-table-sub">{{ record.employeeId }}</div>
+                </td>
+                <td>{{ record.department }}</td>
+                <td>{{ record.date }}</td>
+                <td class="num">
+                  {{ formatTime(record.timeIn) }}
+                  @if (record.lateMinutes > 0) {
+                    <span class="tuman-late">+{{ record.lateMinutes }}m</span>
+                  }
+                </td>
+                <td class="num">{{ formatTime(record.timeOut) }}</td>
+                <td>
+                  <app-status-badge [status]="record.status"></app-status-badge>
+                  @if (record.archived) {
+                    <span class="tuman-badge tuman-badge-archived">Archived</span>
+                  }
+                </td>
+                <td class="tuman-table-sub">{{ sourceLabel(record.source) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile list -->
+      <div class="tuman-hide-desktop">
+        @for (record of records(); track record.id) {
+          <button type="button" class="tuman-record-card" (click)="openDetail(record)">
+            <div class="tuman-row-between">
+              <div>
+                <div class="tuman-record-name">{{ record.employeeName || record.employeeId }}</div>
+                <div class="tuman-record-meta">
+                  {{ record.employeeId }} · {{ record.department }}
+                </div>
+              </div>
+              <app-status-badge [status]="record.status"></app-status-badge>
+            </div>
+            <div class="tuman-row-between tuman-record-foot">
+              <span class="tuman-record-meta">{{ friendlyDate(record.date) }}</span>
+              <span class="tuman-record-meta">
+                in {{ formatTime(record.timeIn) }} · out {{ formatTime(record.timeOut) }}
+                @if (record.archived) {
+                  · archived
+                }
+              </span>
+            </div>
+          </button>
+        }
+      </div>
+    }
+  </div>
+</ion-content>

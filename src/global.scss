@@ -1,0 +1,70 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * TUMAN Attendance — global stylesheet.
+ * The Tuman component classes are imported globally so every page can use
+ * them without per-component stylesheet duplication.
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/*
+ * TUMAN design system (src/theme/tuman.scss) is loaded as a separate
+ * stylesheet entry in angular.json so it lands after the Ionic core CSS.
+ * NOTE: the dark-system palette is intentionally NOT imported — the Tuman
+ * webapp is a light-only design and the hybrid app keeps that behaviour.
+ */
+
+
+/* ---------------------------------------------------------- Global chrome */
+ion-content {
+  --background: #f5f5f5;
+}
+
+ion-title {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+ion-backdrop {
+  background-color: rgba(0, 0, 0, 0.45);
+}
+
+/* Small consistent gutter used by every page shell. */
+.tuman-page {
+  padding: 1rem;
+  max-width: 1180px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tuman-page-narrow {
+  max-width: 520px;
+}
+
+@media (min-width: 992px) {
+  .tuman-page {
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+/* Toolbar buttons should read as light-on-dark. */
+.tuman-topbar ion-button,
+.tuman-topbar ion-icon-button {
+  --color: #ffffff;
+}

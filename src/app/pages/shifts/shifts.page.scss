@@ -1,0 +1,33 @@
+.tuman-shift-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.8rem;
+  margin-bottom: 0.85rem;
+  background: #fafafa;
+}
+
+.tuman-shift-name {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.tuman-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0 0.75rem;
+}
+
+.tuman-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.82rem;
+  color: #555;
+  cursor: pointer;
+}
+
+.tuman-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: #4caf50;
+}

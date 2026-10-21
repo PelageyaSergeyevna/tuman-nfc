@@ -1,0 +1,70 @@
+<ion-content class="tuman-login-page">
+  <div class="tuman-login-wrap">
+    <div class="tuman-login-card">
+      <div class="tuman-login-logo">T</div>
+      <h1 class="tuman-login-title">TUMAN</h1>
+      <p class="tuman-login-sub">Attendance Record Keeper</p>
+
+      @if (auth.error()) {
+        <div class="tuman-alert-inline">
+          <ion-icon name="warning-outline"></ion-icon>
+          <ion-text>{{ auth.error() }}</ion-text>
+        </div>
+      }
+
+      <form (ngSubmit)="submit()">
+        <ion-item lines="none" class="tuman-input-item">
+          <ion-input
+            label="Email address"
+            labelPlacement="stacked"
+            type="email"
+            name="email"
+            autocomplete="username"
+            inputmode="email"
+            placeholder="you@tuman.local"
+            [(ngModel)]="email"
+            required
+          ></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="tuman-input-item">
+          <ion-input
+            label="Password"
+            labelPlacement="stacked"
+            [type]="showPassword ? 'text' : 'password'"
+            name="password"
+            autocomplete="current-password"
+            placeholder="••••••••"
+            [(ngModel)]="password"
+            required
+          ></ion-input>
+        </ion-item>
+
+        <ion-button
+          type="submit"
+          expand="block"
+          class="tuman-btn tuman-btn-lg"
+          [disabled]="busy()"
+        >
+          @if (busy()) {
+            <ion-spinner name="crescent"></ion-spinner>
+          } @else {
+            <ion-icon slot="start" name="log-in-outline"></ion-icon>
+            Sign In
+          }
+        </ion-button>
+      </form>
+
+      <div class="tuman-login-demo">
+        <div class="tuman-section-title">Demo accounts — password <code>Tuman123</code></div>
+        @for (account of demoAccounts; track account.email) {
+          <button type="button" class="tuman-demo-row" (click)="fill(account)">
+            <span class="tuman-demo-role">{{ account.label }}</span>
+            <span class="tuman-demo-email">{{ account.email }}</span>
+            <span class="tuman-demo-dept">{{ account.role }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+</ion-content>

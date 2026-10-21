@@ -1,0 +1,146 @@
+<app-page-header title="Employee Directory">
+  @if (isHR()) {
+    <ion-button (click)="startCreate()" fill="clear" color="light">
+      <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+    </ion-button>
+  }
+</app-page-header>
+
+<ion-content>
+  <div class="tuman-page">
+    <!-- -------------------------------------------------- Search filter -->
+    <div class="tuman-panel tuman-panel-tight">
+      <div class="tuman-search-wrap">
+        <ion-icon name="search-outline" class="tuman-search-icon"></ion-icon>
+        <input
+          class="tuman-input tuman-search-input"
+          type="search"
+          placeholder="Search by name, code, email or position"
+          [(ngModel)]="search"
+          name="search"
+        />
+      </div>
+      @if (isHR()) {
+        <div class="tuman-hint">
+          {{ users().length }} employees across all departments.
+        </div>
+      } @else {
+        <div class="tuman-hint">
+          {{ users().length }} employees in {{ auth.department() }}.
+        </div>
+      }
+    </div>
+
+    <!-- --------------------------------------------------- Create / edit -->
+    @if (showForm()) {
+      <div class="tuman-panel">
+        <div class="tuman-panel-title">
+          {{ editing() ? 'Edit employee' : 'New employee' }}
+        </div>
+        <div class="tuman-panel-sub">
+          The Firebase Auth account must exist with the same email address; the profile
+          here decides the role and department.
+        </div>
+
+        <div class="tuman-form-grid">
+          <div class="tuman-field">
+            <label class="tuman-label" for="empId">Employee code</label>
+            <input id="empId" class="tuman-input" [(ngModel)]="draftEmployeeId" name="draftEmployeeId" />
+          </div>
+          <div class="tuman-field">
+            <label class="tuman-label" for="fullName">Full name</label>
+            <input id="fullName" class="tuman-input" [(ngModel)]="draftName" name="draftName" />
+          </div>
+          <div class="tuman-field">
+            <label class="tuman-label" for="email">Email</label>
+            <input id="email" class="tuman-input" type="email" [(ngModel)]="draftEmail" name="draftEmail" />
+          </div>
+          <div class="tuman-field">
+            <label class="tuman-label" for="position">Position</label>
+            <input id="position" class="tuman-input" [(ngModel)]="draftPosition" name="draftPosition" />
+          </div>
+          <div class="tuman-field">
+            <label class="tuman-label" for="role">Role</label>
+            <select id="role" class="tuman-input" [(ngModel)]="draftRole" name="draftRole">
+              @for (role of roles; track role) {
+                <option [value]="role">{{ roleLabels[role] }}</option>
+              }
+            </select>
+          </div>
+          <div class="tuman-field">
+            <label class="tuman-label" for="department">Department</label>
+            <select id="department" class="tuman-input" [(ngModel)]="draftDepartment" name="draftDepartment">
+              @for (department of departments; track department) {
+                <option [value]="department">{{ department }}</option>
+              }
+            </select>
+          </div>
+          <div class="tuman-field">
+            <label class="tuman-label" for="phone">Contact number</label>
+            <input id="phone" class="tuman-input" [(ngModel)]="draftPhone" name="draftPhone" />
+          </div>
+        </div>
+
+        <div class="tuman-row">
+          <ion-button class="tuman-btn" (click)="save()">
+            <ion-icon slot="start" name="save-outline"></ion-icon>
+            Save
+          </ion-button>
+          <ion-button fill="outline" class="tuman-btn tuman-btn-secondary" (click)="cancel()">
+            Cancel
+          </ion-button>
+        </div>
+      </div>
+    }
+
+    <!-- ----------------------------------------------------- Employee list -->
+    @if (filtered().length === 0) {
+      <div class="tuman-panel">
+        <app-empty-state
+          title="No employees found"
+          message="Adjust the search term or add a new employee."
+        ></app-empty-state>
+      </div>
+    } @else {
+      <div class="tuman-table-wrap">
+        <table class="tuman-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Name</th>
+              <th>Department</th>
+              <th>Position</th>
+              <th>Role</th>
+              @if (isHR()) {
+                <th></th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (employee of filtered(); track employee.uid) {
+              <tr>
+                <td class="tuman-mono">{{ employee.employeeId }}</td>
+                <td>
+                  <strong>{{ employee.displayName }}</strong>
+                  <div class="tuman-table-sub">{{ employee.email }}</div>
+                </td>
+                <td>{{ employee.department }}</td>
+                <td>{{ employee.position || '—' }}</td>
+                <td>
+                  <span class="tuman-chip">{{ roleLabels[employee.role] }}</span>
+                </td>
+                @if (isHR()) {
+                  <td class="num">
+                    <ion-button size="small" fill="clear" (click)="startEdit(employee)">
+                      Edit
+                    </ion-button>
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</ion-content>

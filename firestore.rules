@@ -1,0 +1,378 @@
+rules_version = '2';
+
+/**
+ * TUMAN Attendance — Firestore Security Rules
+ * ============================================
+ *
+ * Access model (three roles):
+ *
+ *   hr       HR Staff
+ *            - reads every department
+ *            - creates/edits attendance in their OWN department only
+ *            - archives records in their own department directly
+ *            - approves archive requests for ANY department
+ *            - reviews correction requests for ANY department
+ *
+ *   manager  Department Head
+ *            - reads and edits attendance in their OWN department only
+ *            - canNOT archive: archiving always requires an HR-approved
+ *              archive request (this is the "Department Head has to get
+ *              approval from HR Staff first before archiving" rule)
+ *            - reviews correction requests raised by their own department
+ *
+ *   employee Employee
+ *            - read-only on their OWN attendance records
+ *            - may file a correction request for their own records
+ *            - cannot create, edit, archive or delete anything
+ *
+ * Nobody can delete attendance records — "Archive" replaces "Delete".
+ */
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =====================================================================
+    // Helpers
+    // =====================================================================
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // -----------------------------------------------------------------------
+    // NOTE (emulator): firebase-tools 15.x reports a comparison against a
+    // `get()`-derived value that evaluates to FALSE as an "evaluation error"
+    // instead of `false`. The allow/deny outcome is identical to production
+    // (the runtime treats the failed comparison as false inside `&&`, `||`
+    // and `!`), so the rules below behave exactly the same on the real
+    // backend. The noise only shows up in denied test cases.
+    // -----------------------------------------------------------------------
+
+    /** The signed-in user's own profile document. */
+    function me() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function myRole() {
+      return me().role;
+    }
+
+    function myDept() {
+      return me().department;
+    }
+
+    function myEmployeeId() {
+      return me().employeeId;
+    }
+
+    function isHR() {
+      return myRole() == 'hr';
+    }
+
+    function isHead() {
+      return myRole() == 'manager';
+    }
+
+    function isEmployee() {
+      return myRole() == 'employee';
+    }
+
+    /** HR Staff + Department Heads (the people with CRUD rights). */
+    function isStaff() {
+      return isHR() || isHead();
+    }
+
+    // ---------------------------------------------------------------- users
+
+    function canReadUser(u) {
+      return isHR()
+        || u.uid == request.auth.uid
+        || (isHead() && u.department == myDept());
+    }
+
+    // ------------------------------------------------------------ attendance
+
+    /** Can this user read the given attendance record? */
+    function canReadAttendance(d) {
+      return isHR()
+        || (isHead() && d.department == myDept())
+        || (isEmployee() && d.employeeId == myEmployeeId());
+    }
+
+    /** The identity of a record can never be rewritten. */
+    function identityUnchanged() {
+      return request.resource.data.employeeId == resource.data.employeeId
+        && request.resource.data.date == resource.data.date
+        && request.resource.data.department == resource.data.department;
+    }
+
+    /** Fields that only the archive workflow may touch. */
+    function archiveFieldSet() {
+      return ['archived', 'archivedAt', 'archivedBy', 'archivedByName',
+              'archiveReason', 'archiveRequestId'];
+    }
+
+    /**
+     * The archive fields plus the bookkeeping timestamp.
+     * NOTE: the list is written out in full — Firestore rules have no list
+     * concatenation operator, so `archiveFieldSet() + ['updatedAt']` fails
+     * with "Unsupported operation error. Received: list + list".
+     */
+    function archiveWriteSet() {
+      return ['archived', 'archivedAt', 'archivedBy', 'archivedByName',
+              'archiveReason', 'archiveRequestId', 'updatedAt'];
+    }
+
+    function touchesArchiveFields() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasAny(archiveFieldSet());
+    }
+
+    function archiveFieldsOnly() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(archiveWriteSet());
+    }
+
+    /**
+     * The correction fields plus the bookkeeping timestamp.
+     * Written out in full — see the note on `archiveWriteSet()`.
+     */
+    function correctionWriteSet() {
+      return ['status', 'timeIn', 'timeOut', 'lateMinutes', 'notes',
+              'correctionRequestId', 'updatedAt'];
+    }
+
+    function correctionFieldsOnly() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(correctionWriteSet());
+    }
+
+    /** Is there an APPROVED archive request that points at this exact record? */
+    function hasApprovedArchiveRequest() {
+      return request.resource.data.archiveRequestId is string
+        && exists(/databases/$(database)/documents/archiveRequests/$(request.resource.data.archiveRequestId))
+        && get(/databases/$(database)/documents/archiveRequests/$(request.resource.data.archiveRequestId)).data.status == 'approved'
+        && get(/databases/$(database)/documents/archiveRequests/$(request.resource.data.archiveRequestId)).data.attendanceId == resource.id
+        && get(/databases/$(database)/documents/archiveRequests/$(request.resource.data.archiveRequestId)).data.department == resource.data.department;
+    }
+
+    /** HR applying an approved archive to a record in another department. */
+    function canApplyApprovedArchive() {
+      return isHR()
+        && resource.data.department != myDept()
+        && archiveFieldsOnly()
+        && hasApprovedArchiveRequest();
+    }
+
+    /** Is there an APPROVED correction request that points at this exact record? */
+    function hasApprovedCorrectionRequest() {
+      return request.resource.data.correctionRequestId is string
+        && exists(/databases/$(database)/documents/correctionRequests/$(request.resource.data.correctionRequestId))
+        && get(/databases/$(database)/documents/correctionRequests/$(request.resource.data.correctionRequestId)).data.status == 'approved'
+        && get(/databases/$(database)/documents/correctionRequests/$(request.resource.data.correctionRequestId)).data.attendanceId == resource.id;
+    }
+
+    /** HR applying an approved correction to a record in another department. */
+    function canApplyApprovedCorrection() {
+      return isHR()
+        && resource.data.department != myDept()
+        && resource.data.archived == false
+        && correctionFieldsOnly()
+        && hasApprovedCorrectionRequest();
+    }
+
+    // --------------------------------------------------- archive requests
+
+    function isArchiveRequestReviewer() {
+      // Only HR Staff sign off on archival — a Department Head never
+      // approves an archive (not even their own department's).
+      return isHR();
+    }
+
+    function canReadArchiveRequest(r) {
+      return isHR()
+        || (isHead() && r.department == myDept())
+        || (isEmployee() && r.employeeId == myEmployeeId());
+    }
+
+    // ------------------------------------------------ correction requests
+
+    function canReadCorrectionRequest(r) {
+      return isHR()
+        || (isHead() && r.department == myDept())
+        || (isEmployee() && r.employeeId == myEmployeeId());
+    }
+
+    function canCreateCorrectionRequest(r) {
+      return isSignedIn() && (
+        // Employees may only file for themselves, inside their own department.
+        (isEmployee() && r.employeeId == myEmployeeId() && r.department == myDept())
+        // Staff may file on behalf of their own department.
+        || (isStaff() && r.department == myDept())
+      );
+    }
+
+    function canReviewCorrectionRequest(r) {
+      return r.status == 'pending' && (
+        isHR()
+        || (isHead() && r.department == myDept())
+      );
+    }
+
+    // ------------------------------------------------------- notifications
+
+    function isNotificationRecipient(n) {
+      return (n.recipientRole != null && n.recipientRole == myRole())
+        || (n.recipientEmployeeId != null && n.recipientEmployeeId == myEmployeeId());
+    }
+
+    // =====================================================================
+    // users
+    // =====================================================================
+
+    match /users/{uid} {
+      allow get, list: if isSignedIn() && canReadUser(resource.data);
+      allow create: if isHR() && request.resource.data.role in ['hr', 'manager', 'employee'];
+      // A user may keep their own profile up to date, but may never promote
+      // themselves, move department, or change their role.
+      allow update: if isHR()
+        || (isSignedIn() && uid == request.auth.uid
+            && request.resource.data.diff(resource.data).affectedKeys()
+                 .hasOnly(['displayName', 'phone', 'photoUrl', 'updatedAt']));
+      allow delete: if false;
+    }
+
+    // =====================================================================
+    // attendance
+    // =====================================================================
+
+    match /attendance/{attendanceId} {
+      allow read: if isSignedIn() && canReadAttendance(resource.data);
+
+      // HR Staff and Department Heads may open a record for their own
+      // department. Records are never born archived.
+      allow create: if isSignedIn()
+        && isStaff()
+        && request.resource.data.department == myDept()
+        && request.resource.data.archived == false
+        && request.resource.data.employeeId is string
+        && request.resource.data.date is string;
+
+      allow update: if isSignedIn() && identityUnchanged() && (
+        // (A1) Staff editing the CONTENT of a record in their own department.
+        //      Archive fields are deliberately excluded — archiving always
+        //      runs through the approval workflow.
+        (isStaff()
+          && resource.data.department == myDept()
+          && resource.data.archived == false
+          && !touchesArchiveFields())
+        // (A2) HR archiving inside their own department, archive fields only.
+        || (isHR()
+          && resource.data.department == myDept()
+          && archiveFieldsOnly())
+        // (B) HR applying an HR-approved archive in another department.
+        || canApplyApprovedArchive()
+        // (C) HR applying an approved correction in another department.
+        || canApplyApprovedCorrection()
+      );
+
+      // Attendance history is never deleted — it is archived.
+      allow delete: if false;
+    }
+
+    // =====================================================================
+    // nfcCards
+    // =====================================================================
+
+    match /nfcCards/{cardId} {
+      allow read: if isSignedIn() && (
+        isStaff() || resource.data.employeeId == myEmployeeId()
+      );
+
+      allow create, update: if isSignedIn()
+        && isStaff()
+        && request.resource.data.department == myDept()
+        && request.resource.data.employeeId is string;
+
+      allow delete: if isStaff() && resource.data.department == myDept();
+    }
+
+    // =====================================================================
+    // archiveRequests
+    // =====================================================================
+
+    match /archiveRequests/{requestId} {
+      allow read: if isSignedIn() && canReadArchiveRequest(resource.data);
+
+      // A Department Head (or HR Staff) raises a request for a record in
+      // their own department.
+      allow create: if isSignedIn()
+        && isStaff()
+        && request.resource.data.department == myDept()
+        && request.resource.data.status == 'pending'
+        && request.resource.data.requestedBy == request.auth.uid;
+
+      // Only HR Staff sign off. Approving/rejecting changes the decision
+      // fields only — the request body is immutable.
+      allow update: if isSignedIn()
+        && isArchiveRequestReviewer()
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['status', 'reviewedBy', 'reviewedByName', 'reviewedAt', 'reviewNote']);
+
+      allow delete: if false;
+    }
+
+    // =====================================================================
+    // correctionRequests
+    // =====================================================================
+
+    match /correctionRequests/{requestId} {
+      allow read: if isSignedIn() && canReadCorrectionRequest(resource.data);
+
+      allow create: if canCreateCorrectionRequest(request.resource.data)
+        && request.resource.data.status == 'pending'
+        && request.resource.data.requestedBy == request.auth.uid;
+
+      allow update: if isSignedIn()
+        && canReviewCorrectionRequest(resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['status', 'reviewedBy', 'reviewedByName', 'reviewedAt', 'reviewNote']);
+
+      allow delete: if false;
+    }
+
+    // =====================================================================
+    // notifications
+    // =====================================================================
+
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn() && isNotificationRecipient(resource.data);
+
+      allow create: if isSignedIn() && isStaff();
+
+      // Only the per-user "read" bookkeeping may be changed.
+      allow update: if isSignedIn()
+        && (isStaff() || isNotificationRecipient(resource.data))
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readBy']);
+
+      allow delete: if isStaff();
+    }
+
+    // =====================================================================
+    // settings (shift schedules and other shared configuration)
+    // =====================================================================
+
+    match /settings/{settingId} {
+      allow read: if isSignedIn();
+      allow write: if isHR();
+    }
+
+    // Shift schedules live in the `settings/attendance/shift_schedules`
+    // sub-collection: every signed-in user reads them, only HR Staff writes.
+    match /settings/{settingId}/shift_schedules/{scheduleId} {
+      allow read: if isSignedIn();
+      allow write: if isHR();
+    }
+
+    // Anything not explicitly allowed above is denied.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
