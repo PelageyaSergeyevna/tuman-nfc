@@ -169,11 +169,13 @@ export class AttendanceService {
       lateMinutes: record.lateMinutes ?? 0,
       source: record.source ?? 'manual',
       notes: record.notes ?? '',
+      // The create rule requires `archived == false` on a new record, so the
+      // field must be present even when the caller does not set it. Writing
+      // `false` onto an existing non-archived record is a no-op for the
+      // rules' diff (the value does not change), so plain edits stay safe.
+      archived: record.archived ?? false,
       updatedAt: new Date().toISOString(),
     };
-    if (record.archived !== undefined) {
-      payload['archived'] = record.archived;
-    }
     if (record.shiftId) {
       payload['shiftId'] = record.shiftId;
     }

@@ -265,6 +265,25 @@ describe('attendance writes', () => {
     );
   });
 
+  // Regression: the scanner and the record editor used to save a record
+  // without the `archived` field at all. The create rule requires
+  // `archived == false`, so a first tap of the day was rejected with
+  // "Missing or insufficient permissions". AttendanceService.save now always
+  // writes `archived`. These two cases pin that behaviour down.
+  it('blocks creating a record that omits the archived field', async () => {
+    const db = as(UID.headIt);
+    const { archived, ...withoutArchived } = record('EMP001', 'IT', { date: '2026-02-07' });
+    expect(archived).toBe(false);
+    await assertFails(setDoc(doc(db, 'attendance', 'EMP001_2026-02-07'), withoutArchived));
+  });
+
+  it('lets a Department Head create a record that carries archived: false', async () => {
+    const db = as(UID.headIt);
+    await assertSucceeds(
+      setDoc(doc(db, 'attendance', 'EMP001_2026-02-08'), record('EMP001', 'IT', { date: '2026-02-08', archived: false })),
+    );
+  });
+
   it('blocks an Employee from creating a record', async () => {
     const db = as(UID.employeeIt);
     await assertFails(
