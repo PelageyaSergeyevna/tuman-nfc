@@ -1,14 +1,11 @@
 /**
  * Which build of the app is running.
  *
- * `web`      — the console: cards, shifts, people, approvals and every other
- *              screen that changes data.
- * `android`  — the phone app: the NFC scanner, attendance records and
- *              correction requests. Everything else is one tap away in the
- *              web console.
+ * `web`     — the console: cards, shifts, people, approvals, records.
+ * `android` — the phone app: the NFC scanner, records, correction requests.
  *
- * The value is fixed at build time (see `angular.json`), so the phone build
- * does not even ship the screens it may not use.
+ * Fixed at build time (see `angular.json`), so the phone build does not even
+ * ship the screens it may not use.
  */
 import { environment } from '../../environments/environment';
 

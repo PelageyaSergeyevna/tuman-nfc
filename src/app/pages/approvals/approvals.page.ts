@@ -1,3 +1,7 @@
+/**
+ * HR Staff approval queue for archive and correction requests, with a
+ * pending / approved / rejected filter.
+ */
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import {
   IonButton,
@@ -60,6 +64,7 @@ export class ApprovalsPage implements OnInit, OnDestroy {
     addIcons({ 'checkmark-outline': checkmarkOutline, 'close-outline': closeOutline });
   }
 
+  // Read every request; this page is HR-only.
   ngOnInit(): void {
     this.requests.listenArchiveRequests('all');
     this.requests.listenCorrectionRequests('all');
@@ -85,6 +90,8 @@ export class ApprovalsPage implements OnInit, OnDestroy {
     return formatDateTime(value);
   }
 
+  // Approve / reject. Approval applies the change immediately; rejection
+  // collects an optional reason.
   async approveArchive(id: string): Promise<void> {
     const request = this.archiveRequests().find((r) => r.id === id);
     if (!request) {

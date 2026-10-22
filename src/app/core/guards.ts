@@ -18,11 +18,9 @@ import { UserRole } from './models';
 import { isPhoneApp } from './surface';
 
 /**
- * Resolve once Firebase Auth has reported its initial state and the profile
- * of the signed-in user has arrived.
- *
- * The injector is passed in because the waiting happens after an `await`,
- * where the injection context is no longer available.
+ * Resolve once Auth has reported its initial state and the signed-in user's
+ * profile has arrived. The injector is passed in because the wait happens
+ * after an `await`, outside the injection context.
  */
 export async function waitForAuth(auth: AuthService, injector: Injector): Promise<void> {
   if (!auth.ready()) {
@@ -30,8 +28,8 @@ export async function waitForAuth(auth: AuthService, injector: Injector): Promis
       toObservable(auth.ready, { injector }).pipe(filter((v) => v === true), take(1)),
     );
   }
-  // The profile of the user arrives a moment after the sign-in state. Waiting
-  // for it keeps the guards from bouncing a signed-in user to the login page.
+  // The profile arrives a moment after the sign-in state; waiting for it keeps
+  // the guards from bouncing a signed-in user to the login page.
   if (auth.signedIn() && !auth.profileReady()) {
     await firstValueFrom(
       toObservable(auth.profileReady, { injector }).pipe(filter((v) => v === true), take(1)),
@@ -50,7 +48,7 @@ export const authGuard: CanActivateFn = async () => {
     return router.createUrlTree(['/login']);
   }
   if (!auth.profile()) {
-    // Signed in with Firebase Auth but no app profile — no access at all.
+    // Signed in with Auth but no app profile — no access at all.
     return router.createUrlTree(['/login']);
   }
   return true;
@@ -70,11 +68,8 @@ export const guestGuard: CanActivateFn = async () => {
 };
 
 /**
- * The landing screen.
- *
- * In the web console it is the dashboard. In the phone app the scanner is the
- * first screen for the people who may scan; everybody else — an employee has
- * nothing to scan — starts at the staff notice.
+ * The landing screen: the dashboard in the console, the scanner in the phone
+ * app (non-scanners start at the staff notice).
  */
 export const homeGuard: CanActivateFn = async () => {
   const auth = inject(AuthService);
@@ -94,12 +89,7 @@ export const homeGuard: CanActivateFn = async () => {
   return router.createUrlTree(['/dashboard']);
 };
 
-/**
- * The phone app is for the people who scan cards.
- *
- * An employee may use the web console, but not the app on the phone, so every
- * screen of the phone build sends them to the staff notice.
- */
+/** Keeps employees (who do not scan) out of the phone app's screens. */
 export const staffGuard: CanActivateFn = async () => {
   const auth = inject(AuthService);
   const router = inject(Router);

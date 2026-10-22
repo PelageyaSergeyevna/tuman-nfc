@@ -1,3 +1,7 @@
+/**
+ * The app shell: the sidebar (built from the role's menu) and the surface's
+ * route outlet, plus the NFC reader lifecycle and the pending-update check.
+ */
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import {

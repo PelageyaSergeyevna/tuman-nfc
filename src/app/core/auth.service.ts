@@ -33,11 +33,7 @@ export class AuthService {
   /** True until the initial auth state has been resolved. */
   readonly ready = signal(false);
 
-  /**
-   * True once the profile of the signed-in user has been read — or once it is
-   * known that there is none. The route guards wait for it, so a user is not
-   * sent to the login page while the profile is still on its way.
-   */
+  /** True once the profile has been read (or found absent); the guards await it. */
   readonly profileReady = signal(false);
 
   /** Last error message produced by a sign-in attempt. */
@@ -91,7 +87,6 @@ export class AuthService {
     this.error.set(null);
     try {
       const cred = await signInWithEmailAndPassword(this.auth, email.trim(), password);
-      // Keep the Firebase display name in sync with the app profile name.
       if (!cred.user.displayName && this.profile()?.displayName) {
         await updateProfile(cred.user, { displayName: this.profile()!.displayName });
       }

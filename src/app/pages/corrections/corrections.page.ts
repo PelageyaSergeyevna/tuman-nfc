@@ -1,3 +1,6 @@
+/**
+ * Correction requests: everyone sees their own; HR and managers also review.
+ */
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { IonButton, IonContent, IonIcon } from '@ionic/angular';
 import { addIcons } from 'ionicons';
@@ -45,6 +48,7 @@ export class CorrectionsPage implements OnInit, OnDestroy {
     });
   }
 
+  // Read the requests at the widest scope the role allows.
   ngOnInit(): void {
     const role = this.auth.role();
     this.requests.listenCorrectionRequests(

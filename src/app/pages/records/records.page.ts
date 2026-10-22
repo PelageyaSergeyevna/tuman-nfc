@@ -1,3 +1,7 @@
+/**
+ * Attendance records: a role-scoped, date- and status-filtered table with
+ * create / edit, archive and correction actions.
+ */
 import { Component, computed, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -65,9 +69,7 @@ export class RecordsPage implements OnInit, OnDestroy {
 
   readonly statusLabels = STATUS_LABELS;
 
-  /**
-   * Records are created by HR Staff and Department Heads.
-   */
+  /** Only HR Staff and Department Heads may create records. */
   readonly canCreate = computed(() => {
     const role = this.auth.role();
     return role === 'hr' || role === 'manager';

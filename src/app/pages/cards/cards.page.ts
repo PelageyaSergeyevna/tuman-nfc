@@ -1,3 +1,4 @@
+/** Console screen for assigning, releasing and toggling NFC cards. */
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {

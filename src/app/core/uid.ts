@@ -1,15 +1,8 @@
 /**
- * NFC card UID helpers.
- *
- * A card is identified by the raw UID of the tag (`Tag.getId()`), which the
- * scanner reports as an upper-case hex string without separators. Staff,
- * however, tend to type the number printed on the card, which is usually
- * written in colon separated form (`52:C2:8E:DE`). These helpers accept
- * both and always produce the canonical form used as the Firestore
- * document id.
- *
- * The module is deliberately free of any Firebase import so the rules can be
- * unit tested on their own.
+ * NFC card UID helpers. Accepts both the scanner's plain hex and the
+ * staff-typed colon-separated form, always producing the canonical form used
+ * as the Firestore document id. Deliberately free of Firebase imports so the
+ * rules can be unit tested on their own.
  */
 
 /** UID lengths, in bytes, that NFC tags are commonly seen with. */
@@ -20,11 +13,8 @@ export const UID_FORMAT_HINT =
   'Card UID must be 4, 7 or 10 hex bytes — for example 52:C2:8E:DE or 52C28EDE.';
 
 /**
- * Strip separators, a `0x` prefix and whitespace and upper-case the rest.
- *
- * `52:C2:8E:DE`, `52-c2-8e-de` and `52 C2 8E DE` all become `52C28EDE`.
- * Characters that are not hex digits are left in place — `isValidUid()`
- * reports them instead of silently dropping them.
+ * Strip separators, a `0x` prefix and whitespace, then upper-case. Non-hex
+ * characters are left in place so `isValidUid()` can report them.
  */
 export function normalizeUid(raw: string | null | undefined): string {
   if (!raw) {
@@ -38,12 +28,9 @@ export function normalizeUid(raw: string | null | undefined): string {
 }
 
 /**
- * True when the value is a plausible NFC tag UID: hex digits only, and a
- * length of 4, 7 or 10 bytes.
- *
- * Shorter values are rejected on purpose. Ultralight and NTAG cards print
- * only the last three bytes of their UID, and such a fragment can never
- * match a full UID read by the scanner.
+ * True when the value is a plausible UID: hex only, 4/7/10 bytes. Shorter
+ * values are rejected because a printed partial UID (Ultralight/NTAG) can
+ * never match a full UID read by the scanner.
  */
 export function isValidUid(raw: string | null | undefined): boolean {
   const uid = normalizeUid(raw);

@@ -1,3 +1,4 @@
+/** Console screen for editing the shift schedules used to judge check-ins. */
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonButton, IonContent } from '@ionic/angular';

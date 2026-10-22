@@ -18,12 +18,17 @@ export class UsersService {
   private readonly db = firestoreDb();
   private readonly auth = inject(AuthService);
 
+  /** Live snapshot of the users in the current scope. */
   readonly users = signal<AppUser[]>([]);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
   private unsubscribe: (() => void) | null = null;
 
+  /**
+   * Subscribe to the users for a scope: the signed-in user's own document for
+   * 'self', otherwise a department-filtered, ordered collection query.
+   */
   listen(scope: DirectoryScope): void {
     this.loading.set(true);
     this.unsubscribe?.();
@@ -72,6 +77,7 @@ export class UsersService {
     this.unsubscribe = null;
   }
 
+  /** Cached lookups by employee code and by auth uid. */
   findByEmployeeId(employeeId: string): AppUser | undefined {
     return this.users().find((u) => u.employeeId === employeeId);
   }

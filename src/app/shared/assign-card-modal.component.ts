@@ -1,14 +1,9 @@
 /**
  * The "add card" popup of the scanner.
  *
- * A card that is not assigned yet is scanned by mistake, by a new employee or
- * by a card that was never handed out. The staff member who is scanning picks
- * the owner of the card in this popup, and the check-in of that card is filed
- * right away — the card is assigned and the attendance is recorded in one go.
- *
- * The popup only picks the employee. Writing the card and filing the
- * attendance is the job of the scanner, which checks the card once more
- * before it writes anything.
+ * A card that belongs to nobody was scanned. The popup only picks which
+ * employee owns it; the scanner assigns the card and files the check-in, and
+ * re-checks the card before it writes anything.
  */
 import { Component, computed, inject, Input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';

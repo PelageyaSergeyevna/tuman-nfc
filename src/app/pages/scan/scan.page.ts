@@ -1,3 +1,9 @@
+/**
+ * The NFC scanner — the phone app's home screen.
+ *
+ * A scan identifies the card's employee and files the day's check-in, or
+ * offers to assign a card that belongs to nobody yet.
+ */
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import {
   IonButton,
@@ -164,15 +170,13 @@ export class ScanPage implements OnInit, OnDestroy {
 
   /** Handle a scanned card: identify the employee and file the check-in. */
   private async handleTag(tag: ScannedTag): Promise<void> {
-    // Drop the pending copy so the same card is not handled twice.
     this.nfc.takePendingTag();
     this.scanned.set(tag);
     this.state.set('idle');
 
     const card = this.cards.findByUid(tag.uid);
     if (!card) {
-      // A card nobody owns: the staff member picks its owner in the popup and
-      // the check-in is filed right away.
+      // A card nobody owns: offer to assign it, then file the check-in.
       await this.offerAssign(tag);
       return;
     }
@@ -196,11 +200,8 @@ export class ScanPage implements OnInit, OnDestroy {
   }
 
   /**
-   * File the check-in of an employee.
-   *
-   * The card is not needed here: the shift of the day decides whether the
-   * check-in counts as on time. The message that is shown is returned, so the
-   * caller can put it together with what it did itself.
+   * File a check-in: the shift of the day decides on-time vs late, and an
+   * existing time-in is confirmed before it is overwritten. Returns the message.
    */
   private async fileCheckIn(person: CheckInPerson, now: Date): Promise<string> {
     const shift = this.shifts.activeShift(now);
@@ -264,12 +265,7 @@ export class ScanPage implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * A card without an owner was scanned.
-   *
-   * The popup asks which employee the card belongs to. When the staff member
-   * skips it, the card stays unassigned and can still be added later.
-   */
+  /** Re-open the assign popup for the card that was just scanned. */
   async addCard(): Promise<void> {
     const tag = this.scanned();
     if (!tag) {
@@ -278,6 +274,7 @@ export class ScanPage implements OnInit, OnDestroy {
     await this.offerAssign(tag);
   }
 
+  /** Ask which employee an unassigned card belongs to, then check that person in. */
   private async offerAssign(tag: ScannedTag): Promise<void> {
     const employees = this.employees();
     if (employees.length === 0) {
@@ -307,11 +304,8 @@ export class ScanPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Assign a card to an employee and file the check-in of that card.
-   *
-   * The card is looked up once more: it may have been assigned in the console
-   * while the popup was open, and a card that belongs to somebody else must
-   * not be taken over.
+   * Assign a card and file its check-in. The card is re-checked first: it may
+   * have been assigned elsewhere while the popup was open.
    */
   private async assignAndCheckIn(uid: string, employeeId: string): Promise<void> {
     const employee = this.users.findByEmployeeId(employeeId);

@@ -1,3 +1,4 @@
+/** Unit tests for the NFC card UID helpers. */
 import { describe, expect, it } from 'vitest';
 
 import { describeUid, formatUid, isValidUid, normalizeUid, UID_BYTE_LENGTHS } from './uid';

@@ -136,12 +136,7 @@ export class RequestsService {
     return ref.id;
   }
 
-  /**
-   * Approve or reject an archive request.
-   *
-   * On approval the attendance document is archived in the same flow, which
-   * is what makes the "HR approval before archiving" rule visible in the UI.
-   */
+  /** Approve or reject an archive request; approval also archives the record. */
   async reviewArchiveRequest(
     request: ArchiveRequest,
     approve: boolean,
@@ -203,12 +198,7 @@ export class RequestsService {
     return ref.id;
   }
 
-  /**
-   * Approve or reject a correction request.
-   *
-   * On approval the proposed values are written back to the attendance
-   * document together with the id of the approving request.
-   */
+  /** Approve or reject a correction; approval writes the proposed values back. */
   async reviewCorrectionRequest(
     request: CorrectionRequest,
     approve: boolean,

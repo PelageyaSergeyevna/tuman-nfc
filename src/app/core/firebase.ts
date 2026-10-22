@@ -69,9 +69,7 @@ export function firestoreDb(): Firestore {
   return firestoreRef;
 }
 
-/**
- * Point the SDK at the local emulator suite. Safe to call more than once.
- */
+/** Point the SDK at the local emulator suite. Safe to call more than once. */
 export function connectEmulators(): void {
   if (!environment.useEmulators) {
     return;

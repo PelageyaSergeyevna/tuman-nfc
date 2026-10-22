@@ -1,3 +1,4 @@
+/** The signed-in user's own profile: display name and phone. */
 import { Component, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonButton, IonContent, IonIcon } from '@ionic/angular';
@@ -33,6 +34,7 @@ export class ProfilePage {
     addIcons({ 'save-outline': saveOutline });
   }
 
+  /** Copy the profile into the form once; later calls are no-ops. */
   sync(): void {
     if (this.initialised) {
       return;

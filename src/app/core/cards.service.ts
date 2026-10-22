@@ -52,11 +52,8 @@ export class CardsService {
   }
 
   /**
-   * Find the card assignment for a scanned UID.
-   *
-   * Both sides are normalised, so a UID typed as `52:C2:8E:DE` matches the
-   * `52C28EDE` the scanner reports, and a card stored under an older,
-   * separator-carrying document id is still found.
+   * Find the card for a scanned UID. Both sides are normalised, so a
+   * separator-carrying id still matches the plain hex the scanner reports.
    */
   findByUid(uid: string): NfcCard | undefined {
     const normalized = normalizeUid(uid);
@@ -71,12 +68,7 @@ export class CardsService {
     return this.cards().find((c) => c.employeeId === employeeId);
   }
 
-  /**
-   * Assign a card to an employee (staff only — enforced by the rules).
-   *
-   * The UID is normalised first, so `52:C2:8E:DE` is stored as `52C28EDE`
-   * and always matches what the scanner reads.
-   */
+  /** Assign a card to an employee (staff only); the UID is normalised first. */
   async assign(input: {
     uid: string;
     employeeId: string;
@@ -114,11 +106,8 @@ export class CardsService {
   }
 
   /**
-   * The document id a card is actually stored under.
-   *
-   * Cards are addressed by their UID, but a card stored before the UID was
-   * normalised may carry separators in its id. The stored id always wins, so
-   * normalising can never orphan an existing document.
+   * The document id a card is stored under: the stored (possibly
+   * separator-carrying) id wins, so normalising never orphans a document.
    */
   private resolveDocId(uid: string): string {
     const raw = (uid ?? '').trim();

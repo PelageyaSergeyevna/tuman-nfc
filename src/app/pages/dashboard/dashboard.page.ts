@@ -1,3 +1,4 @@
+/** The web console's landing screen: today at a glance, scoped to the role. */
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
@@ -92,6 +93,7 @@ export class DashboardPage implements OnInit, OnDestroy {
     });
   }
 
+  // Listen to today's records and requests at the widest scope the role allows.
   ngOnInit(): void {
     const role = this.auth.role();
     const scope: RecordScope =

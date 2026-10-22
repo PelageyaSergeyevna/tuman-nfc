@@ -31,6 +31,7 @@ export class NotificationsService {
     return this.notifications().filter((n) => !(n.readBy ?? []).includes(uid)).length;
   });
 
+  /** Subscribe to notifications addressed by role and by employee, merged. */
   listen(): void {
     this.loading.set(true);
     this.unsubByRole?.();

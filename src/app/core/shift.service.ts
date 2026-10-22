@@ -67,6 +67,7 @@ export class ShiftService {
     );
   }
 
+  /** Create or update a schedule (HR Staff only). */
   async save(schedule: ShiftSchedule): Promise<void> {
     await setDoc(doc(this.db, 'settings', SETTINGS_DOC, SCHEDULES_COLLECTION, schedule.id), schedule);
   }

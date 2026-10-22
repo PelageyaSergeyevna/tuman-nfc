@@ -1,12 +1,7 @@
 /**
- * Pure shift / attendance evaluation logic.
- *
- * Kept free of Angular and Firebase so it can be unit tested directly.
- *
- * The legacy Tuman system uses two shifts with a mid-shift meal break:
- *   Day   08:00 → 12:00 (break) → 13:00 → 17:00
- *   Night 18:00 → 22:00 (break) → 23:00 → 06:00
- * Both allow a 15-minute grace period before the employee is marked late.
+ * Pure shift / attendance evaluation logic, free of Angular and Firebase so it
+ * is unit testable. The legacy two shifts (Day 08:00–17:00, Night 18:00–06:00)
+ * each carry a mid-shift meal break and a 15-minute late grace period.
  */
 import { AttendanceStatus, ShiftSchedule } from './models';
 
@@ -35,10 +30,8 @@ export interface CheckInEvaluation {
 }
 
 /**
- * Decide whether a check-in counts as present or late.
- *
- * `lateMinutes` is the number of minutes after the shift start — it is 0
- * for an on-time arrival and can exceed the grace period.
+ * Decide whether a check-in is present or late. `lateMinutes` is minutes
+ * after the shift start (0 when on time, unbounded past the grace period).
  */
 export function evaluateCheckIn(timeIn: Date, shift: ShiftSchedule): CheckInEvaluation {
   const start = parseHhMm(shift.startTime);
@@ -51,9 +44,7 @@ export function evaluateCheckIn(timeIn: Date, shift: ShiftSchedule): CheckInEval
   };
 }
 
-/**
- * Total worked minutes, ignoring the meal break.
- */
+/** Total worked minutes, excluding the meal break. */
 export function workedMinutes(timeIn: Date, timeOut: Date, shift: ShiftSchedule): number {
   const start = minutesOfDay(timeIn);
   let end = minutesOfDay(timeOut);

@@ -1,3 +1,4 @@
+/** Unit tests for the pure shift / attendance evaluation logic. */
 import { describe, expect, it } from 'vitest';
 
 import { ShiftSchedule } from './models';

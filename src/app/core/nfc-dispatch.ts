@@ -1,28 +1,20 @@
 /**
  * Native NFC reader for this app.
  *
- * Android's reader mode is a single global slot on the NFC adapter. The
- * `@capgo/capacitor-nfc` plugin uses the callback variant, which some OEM
- * builds (OPPO/ColorOS) override for MIFARE Classic cards: they register their
- * own PendingIntent with the NFC service and swallow the card before the
- * callback fires.
- *
- * This plugin registers its own reader mode with a PendingIntent, which takes
- * the same slot, and reports the tag through the same event shape the Capgo
- * plugin uses.
+ * Android's reader mode is a single global adapter slot. The Capgo plugin's
+ * callback variant is swallowed on some OEM builds (OPPO/ColorOS) that hand
+ * MIFARE cards to their own card feature. This plugin takes the same slot with
+ * its own PendingIntent and reports tags in the Capgo event shape.
  */
 import { registerPlugin } from '@capacitor/core';
 import type { NfcTag } from '@capgo/capacitor-nfc';
 
 export interface TumanNfcDispatchPlugin {
-  /** True when the native reader is available in this build. */
+  /** Resolves when the native reader is available in this build. */
   ping(): Promise<void>;
   /**
-   * Take the reader slot and start reporting tags.
-   *
-   * `mode` picks the delivery mechanism: `callback` (documented reader mode)
-   * or `pending` (the older PendingIntent based reader mode, used on OEM
-   * builds that hand MIFARE tags to their own card feature).
+   * Take the reader slot and start reporting tags. `mode` picks `callback`
+   * (documented reader mode) or `pending` (PendingIntent, for OEM builds).
    */
   startScanning(options?: { androidReaderModeFlags?: number; mode?: 'callback' | 'pending' }): Promise<void>;
   /** Release the reader slot. */

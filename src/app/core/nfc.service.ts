@@ -21,27 +21,21 @@ import { CapacitorNfc, NfcEvent, NfcTag } from '@capgo/capacitor-nfc';
 
 import { TumanNfcDispatch } from './nfc-dispatch';
 
+/** A scanned NFC card, normalised for the rest of the app. */
 export interface ScannedTag {
   /** Upper-case hex UID, e.g. `A1B2C3D4`. */
   uid: string;
   /** Android tech strings, e.g. `android.nfc.tech.MifareClassic`. */
   techTypes: string[];
-  /** Human readable tag type, e.g. `MIFARE Classic`. */
   type: string | null;
-  /** True when the tag is a Mifare Classic card. */
   isMifareClassic: boolean;
 }
 
-/**
- * Reader mode flags: NFC-A, NFC-B, NFC-F and NFC-V.
- *
- * The plugin's own default also sets FLAG_READER_NO_PLATFORM_SOUNDS, which
- * makes the scan completely silent; dropping that flag lets the phone give
- * its usual beep and vibration so the user knows the card was read.
- */
+// NFC-A/B/F/V. The plugin's default also adds FLAG_READER_NO_PLATFORM_SOUNDS,
+// which silences the scan; dropping it keeps the phone's beep and vibration.
 const READER_MODE_FLAGS = 0x1 | 0x2 | 0x4 | 0x8;
 
-/** The same card can be reported twice; ignore a repeat within this window. */
+// The same card can be reported twice; ignore a repeat within this window.
 const DUPLICATE_WINDOW_MS = 2000;
 
 /** How long a scanned card stays usable for a cold start handover. */
@@ -99,10 +93,7 @@ export class NfcService {
     }
   }
 
-  /**
-   * True when the NFC adapter is present *and* switched on.
-   * `NFC_OK` is the only status that means the radio is usable.
-   */
+  /** True when the NFC adapter is present and switched on. */
   async isEnabled(): Promise<boolean> {
     if (!this.isNative) {
       return false;
@@ -127,11 +118,7 @@ export class NfcService {
     }
   }
 
-  /**
-   * Listen for scanned cards from any delivery path.
-   *
-   * Returns a function that removes the listener again.
-   */
+  /** Listen for scanned cards from any delivery path; returns an unsubscribe. */
   subscribe(onTag: (tag: ScannedTag) => void): () => void {
     this.subscribers.add(onTag);
     return () => {
@@ -140,9 +127,8 @@ export class NfcService {
   }
 
   /**
-   * Take the card that was scanned while nobody was listening, e.g. when the
-   * app was opened by the tap itself. Returns `null` when there is no fresh
-   * card.
+   * Take the card scanned while nobody was listening (e.g. the tap opened the
+   * app); `null` when there is no fresh card.
    */
   takePendingTag(): ScannedTag | null {
     const tag = this.lastTag();
@@ -155,14 +141,10 @@ export class NfcService {
   }
 
   /**
-   * Start scanning.
+   * Start scanning. Idempotent, so it may be called from several places.
    *
-   * The native reader (our own reader mode) is preferred because it owns the
-   * adapter slot that OEM builds hand to their own card features. The Capgo
-   * plugin is only used as a fallback.
-   *
-   * Calling this while the reader is already armed does nothing, so it can be
-   * called from several places (the app shell and the scanner page).
+   * The native reader mode is preferred because it owns the adapter slot that
+   * OEM builds hand to their own card features; the Capgo plugin is fallback.
    */
   async startScanning(onTag?: (tag: ScannedTag) => void): Promise<void> {
     if (!this.isNative) {
@@ -228,8 +210,8 @@ export class NfcService {
   }
 
   /**
-   * Listen for the OEM dispatch fallback. The native side keeps the tag until
-   * a listener exists, so a card that opened the app is not lost.
+   * Listen for the OEM dispatch fallback (OPPO/ColorOS). The native side holds
+   * the tag until a listener exists, so a card that opened the app is not lost.
    */
   private async attachDispatchListener(): Promise<void> {
     if (!this.isNative) {

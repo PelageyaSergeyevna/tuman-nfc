@@ -1,3 +1,4 @@
+/** Employee directory with a searchable list and a create / edit form. */
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonButton, IonContent, IonIcon } from '@ionic/angular';
@@ -66,6 +67,7 @@ export class DirectoryPage implements OnInit, OnDestroy {
     this.usersService.stop();
   }
 
+  /** Case-insensitive search over name, code, email and position. */
   readonly filtered = computed(() => {
     const term = this.search.trim().toLowerCase();
     if (!term) {
@@ -80,6 +82,7 @@ export class DirectoryPage implements OnInit, OnDestroy {
     );
   });
 
+  // The create / edit form. `startCreate` and `startEdit` fill the drafts.
   startCreate(): void {
     this.editing.set(null);
     this.draftUid = '';

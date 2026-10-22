@@ -151,10 +151,11 @@ export class AttendanceService {
   /**
    * Create or update a record.
    *
-   * Only the fields that make up the record body are written — the archive
-   * fields are handled by the dedicated archive workflow so the Security
-   * Rules can enforce the approval chain. `archived` is only written when
-   * explicitly supplied, so a plain edit never trips the archive-field guard.
+   * Writes the record body only; the archive fields go through the dedicated
+   * archive workflow so the rules can enforce the approval chain. `archived`
+   * is always written (defaulting to false) because the create rule requires
+   * it, and re-writing false onto an existing record leaves the rules' diff
+   * untouched — so a plain edit never trips the archive-field guard.
    */
   async save(record: Partial<AttendanceRecord> & { employeeId: string; date: string }): Promise<string> {
     const id = `${record.employeeId}_${record.date}`;
@@ -169,11 +170,8 @@ export class AttendanceService {
       lateMinutes: record.lateMinutes ?? 0,
       source: record.source ?? 'manual',
       notes: record.notes ?? '',
-      // The create rule requires `archived == false` on a new record, so the
-      // field must be present even when the caller does not set it. Writing
-      // `false` onto an existing non-archived record is a no-op for the
-      // rules' diff (the value does not change), so plain edits stay safe.
       archived: record.archived ?? false,
+
       updatedAt: new Date().toISOString(),
     };
     if (record.shiftId) {
@@ -187,10 +185,8 @@ export class AttendanceService {
   }
 
   /**
-   * Archive a record directly, without an approval request.
-   *
-   * Only the archive fields are written so the rules' "archive fields only"
-   * check passes. HR Staff may do this for records in their own department.
+   * Archive a record directly, without an approval request. Writes archive
+   * fields only (as the rules require); HR Staff, own department.
    */
   async archiveDirect(recordId: string, reason: string): Promise<void> {
     const { updateDoc } = await import('firebase/firestore');

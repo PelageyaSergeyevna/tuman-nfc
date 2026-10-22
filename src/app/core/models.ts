@@ -95,15 +95,11 @@ export interface AttendanceRecord {
   /** ISO date, `YYYY-MM-DD`. */
   date: string;
   status: AttendanceStatus;
-  /** ISO timestamp of the check-in, or null. */
   timeIn: string | null;
-  /** ISO timestamp of the check-out, or null. */
   timeOut: string | null;
-  /** Minutes after the shift start that the employee arrived late. */
   lateMinutes: number;
   shiftId?: string;
   shiftName?: string;
-  /** How the record was produced. */
   source: AttendanceRecordSource;
   notes?: string;
   archived: boolean;
@@ -141,7 +137,7 @@ export interface ArchiveRequest {
   date: string;
   reason: string;
   status: RequestStatus;
-  requestedBy: string; // uid
+  requestedBy: string;
   requestedByName: string;
   requestedAt: string;
   reviewedBy?: string | null;

@@ -1,11 +1,8 @@
 /**
- * The routes of the phone app.
+ * Standalone route table for the phone app.
  *
- * The phone app is the scanner: it files check-ins for the people who may
- * scan. The attendance records, the correction requests and every screen that
- * changes data live in the web console, so a link to one of them ends on a
- * notice that points there. An employee has nothing to do in the app and is
- * sent to the staff notice.
+ * The phone app only scans: every other screen lives in the web console, so
+ * a link to one of them ends on a notice that points there.
  */
 import { Routes } from '@angular/router';
 

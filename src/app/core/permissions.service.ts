@@ -49,6 +49,7 @@ const MATRIX: Record<UserRole, Capability[]> = {
 
 @Injectable({ providedIn: 'root' })
 export class PermissionsService {
+  /** True when the role holds the capability. */
   can(role: UserRole | null | undefined, capability: Capability): boolean {
     if (!role) {
       return false;
@@ -61,10 +62,7 @@ export class PermissionsService {
     return this.can(role, 'use:scanner');
   }
 
-  /**
-   * The departments whose attendance the user may write to.
-   * HR and Department Heads are confined to their own department.
-   */
+  /** The departments whose attendance the user may write to (own only). */
   writableDepartments(role: UserRole | null | undefined, ownDepartment: string | undefined): string[] {
     if (!role || !ownDepartment) {
       return [];
@@ -72,9 +70,7 @@ export class PermissionsService {
     return this.can(role, 'write:attendance') ? [ownDepartment] : [];
   }
 
-  /**
-   * A short, human explanation shown when an action is not permitted.
-   */
+  /** A short, human explanation shown when an action is not permitted. */
   explainDenied(capability: Capability): string {
     switch (capability) {
       case 'archive:direct':

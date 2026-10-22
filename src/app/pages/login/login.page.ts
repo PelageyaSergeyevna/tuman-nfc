@@ -1,3 +1,4 @@
+/** Email / password sign-in, with one-tap template accounts for demos. */
 import { Component, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
